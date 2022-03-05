@@ -1,0 +1,24 @@
+.header {
+  position: fixed;
+  width: 100%;
+  padding: 0 2em;
+  gap: 1em;
+  height: 10rem;
+  &__title {
+    font-weight: 400;
+    font-size: 3.4em;
+    line-height: 2em;
+    background: var(--gradient);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  &__subtitle {
+    margin-top: 0.5em;
+    font-weight: 400;
+    font-size: 1em;
+    line-height: 1.1em;
+    color: var(--orange);
+  }
+}
