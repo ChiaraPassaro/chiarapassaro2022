@@ -9,7 +9,3 @@
     </h2>
   </header>
 </template>
-
-<style lang="scss">
-@use "@/assets/partials/_commons.scss";
-</style>

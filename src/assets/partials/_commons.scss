@@ -193,7 +193,7 @@ main {
   }
 
   &__title {
-    background: var(--gradient-two);
+    background: radial-gradient(circle, var(--start) 0%, var(--stop) 100%);
     background-clip: text;
     color: transparent;
     -webkit-background-clip: text;

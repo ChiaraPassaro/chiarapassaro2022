@@ -83,6 +83,8 @@
 import anime from "animejs/lib/anime.es.js";
 import { onMounted } from "vue";
 
+const props = defineProps(["colors"]);
+
 onMounted(() => {
   anime
     .timeline({
