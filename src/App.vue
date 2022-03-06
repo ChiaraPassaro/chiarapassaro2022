@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
 import Header from "@/components/Header.vue";
+import Wave from "@/components/Wave.vue";
 </script>
 
 <template>
@@ -14,7 +15,9 @@ import Header from "@/components/Header.vue";
       </nav>
     </div> -->
   </header>
-
+  <div class="wave">
+    <Wave></Wave>
+  </div>
   <RouterView />
 </template>
 

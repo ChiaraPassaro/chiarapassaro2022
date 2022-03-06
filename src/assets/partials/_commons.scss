@@ -1,5 +1,12 @@
 .d-flex {
   display: flex;
+  gap: 1em;
+}
+.flex-direction-column {
+  flex-direction: column;
+}
+.flex-direction-row {
+  flex-direction: row;
 }
 .justify-content-start {
   justify-content: flex-start;
@@ -23,6 +30,13 @@
   align-items: stretch;
 }
 
+.mt-1 {
+  margin-top: 1em;
+}
+.mt-2 {
+  margin-top: 2em;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -31,4 +45,138 @@
 
 body {
   font-family: "Roboto", sans-serif;
+}
+
+@media screen and (max-width: 660px) {
+  .xs-flex-wrap {
+    flex-wrap: wrap;
+  }
+  .xs-100 {
+    width: 100%;
+  }
+  .xs-justify-content-start {
+    justify-content: flex-start;
+  }
+
+  .xs-justify-content-end {
+    justify-content: flex-end;
+  }
+
+  .xs-justify-content-center {
+    justify-content: center;
+  }
+
+  .xs-align-items-center {
+    align-items: center;
+  }
+
+  .xs-align-items-start {
+    align-items: flex-start;
+  }
+
+  .xs-align-items-end {
+    align-items: flex-end;
+  }
+
+  .xs-align-items-stretch {
+    align-items: stretch;
+  }
+
+  .xs-flex-direction-column {
+    flex-direction: column;
+  }
+
+  .xs-flex-direction-row {
+    flex-direction: row;
+  }
+}
+
+html {
+  height: 100vh;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+main {
+  background: white;
+  height: 20%;
+  @media screen and (min-width: 768px) and (min-height: 400px) {
+    height: 69%;  
+  }
+  @media screen and (max-height: 360px) { 
+    display: none;
+  }
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.wave {
+  position: fixed;
+  top: 30%;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+
+  @media (orientation: landscape) {
+    @media screen and (max-width: 768px) {
+      position: fixed;
+      height: 10%;
+      top: 50%;
+      left: 40%;
+      transform: rotate(90deg) translateY(-50%) scale(3);
+      transform-origin: center;
+    }
+
+    @media screen and (max-height: 400px) {
+      top: 80%;
+    }
+  }
+
+  @media (orientation: portrait) {
+    @media screen and (max-width: 768px) {
+      position: fixed;
+      height: 50px;
+      top: 50%;
+      left: 30%;
+      transform: rotate(90deg) translateY(-50%) scale(3);
+      transform-origin: center;
+    }
+
+    @media screen and (max-height: 400px) {
+      top: 80%;
+    }
+  }
+  
+}
+
+.who-i-am {
+  position: relative;
+  top: 15%;
+  left: 0;
+  z-index: 0;
+
+  &__content {
+    padding-right: 10em;
+  }
+
+  @media screen and (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 2.5fr;
+    grid-gap: 1em;
+  }
+
+  &__title {
+    text-align: right;
+    @media screen and (max-width: 768px) {
+      text-align: left;
+    }
+  }
+
 }
