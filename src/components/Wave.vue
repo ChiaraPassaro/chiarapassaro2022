@@ -20,15 +20,51 @@
         y2="165.9306"
         gradientTransform="matrix(-1 0 0 -1 4648.8281 297.2099)"
       >
-        <stop class="stop" offset="0" style="stop-color: #c85b28" />
-        <stop class="stop" offset="0.1" style="stop-color: #bd6335" />
-        <stop class="stop" offset="0.14" style="stop-color: #a17857" />
-        <stop class="stop" offset="0.26" style="stop-color: #749b8e" />
-        <stop class="stop" offset="0.33" style="stop-color: #58b0b0" />
-        <stop class="stop" offset="0.68" style="stop-color: #b46a41" />
-        <stop class="stop" offset="0.75" style="stop-color: #a67552" />
-        <stop class="stop" offset="0.9" style="stop-color: #81907e" />
-        <stop class="stop" offset="1" style="stop-color: #66a59f" />
+        <stop
+          class="stop"
+          offset="0"
+          :style="`stop-color: ${colors.wave1[0]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.1"
+          :style="`stop-color: ${colors.wave1[1]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.14"
+          :style="`stop-color: ${colors.wave1[2]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.26"
+          :style="`stop-color: ${colors.wave1[3]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.33"
+          :style="`stop-color: ${colors.wave1[4]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.68"
+          :style="`stop-color: ${colors.wave1[5]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.75"
+          :style="`stop-color: ${colors.wave1[6]}`"
+        />
+        <stop
+          class="stop"
+          offset="0.9"
+          :style="`stop-color: ${colors.wave1[7]}`"
+        />
+        <stop
+          class="stop"
+          offset="1"
+          :style="`stop-color: ${colors.wave1[8]}`"
+        />
       </linearGradient>
       <path
         style="fill: url(#SVGID_1_)"
@@ -58,12 +94,36 @@
         x2="4526.3105"
         y2="73.5719"
       >
-        <stop class="stop-2" offset="0" style="stop-color: #58b0b0" />
-        <stop class="stop-2" offset="0.2" style="stop-color: #749b8e" />
-        <stop class="stop-2" offset="0.6" style="stop-color: #b46a41" />
-        <stop class="stop-2" offset="0.7" style="stop-color: #a67552" />
-        <stop class="stop-2" offset="0.8" style="stop-color: #81907e" />
-        <stop class="stop-2" offset="1" style="stop-color: #66a59f" />
+        <stop
+          class="stop-2"
+          offset="0"
+          :style="`stop-color: ${colors.wave2[0]}`"
+        />
+        <stop
+          class="stop-2"
+          offset="0.2"
+          :style="`stop-color: ${colors.wave2[1]}`"
+        />
+        <stop
+          class="stop-2"
+          offset="0.6"
+          :style="`stop-color: ${colors.wave2[2]}`"
+        />
+        <stop
+          class="stop-2"
+          offset="0.7"
+          :style="`stop-color: ${colors.wave2[3]}`"
+        />
+        <stop
+          class="stop-2"
+          offset="0.8"
+          :style="`stop-color: ${colors.wave2[4]}`"
+        />
+        <stop
+          class="stop-2"
+          offset="1"
+          :style="`stop-color: ${colors.wave2[5]}`"
+        />
       </linearGradient>
       <path
         class="st1"
