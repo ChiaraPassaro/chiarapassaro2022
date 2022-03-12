@@ -61,6 +61,7 @@ const stop = computed(() => {
 </template>
 
 <style lang="scss">
+$xs: 798px;
 $sm: 1200px;
 
 @mixin title {
@@ -71,7 +72,6 @@ $sm: 1200px;
   -webkit-text-fill-color: transparent;
 
   text-align: right;
-  padding-right: 1em;
 }
 
 :root {
@@ -89,6 +89,9 @@ $sm: 1200px;
 body {
   font-family: "Roboto", sans-serif;
   @media screen and (max-width: $sm) {
+    font-size: 1.3vmax;
+  }
+  @media screen and (max-width: $xs) {
     font-size: 2vmax;
   }
   font-size: 1vmax;
@@ -119,10 +122,12 @@ body {
 
 .header {
   display: grid;
-  grid-template-columns: 30% 70%;
+  align-items: center;
+  grid-template-columns: 30% 1fr;
   grid-column: 2 / 3;
   grid-row: 1;
   background-color: white;
+  gap: 1em;
 
   @media screen and (max-width: $sm) {
     grid-template-columns: auto;
@@ -170,11 +175,12 @@ body {
   grid-column: 2 / 3;
   grid-row-start: 2;
   grid-row-end: 5;
+  gap: 1em;
   z-index: 0;
   display: grid;
-  grid-template-columns: 30% 70%;
+  grid-template-columns: 30% 1fr;
 
-  @media screen and (max-width: 678px) {
+  @media screen and (max-width: $sm) {
     grid-template-columns: auto;
   }
 }
@@ -185,7 +191,8 @@ body {
   grid-row: 3 / 5;
   background-color: white;
   height: 100%;
-  @media screen and (max-width: 678px) {
+
+  @media screen and (max-width: $sm) {
     position: relative;
     grid-column: 3/5;
     grid-row: 1/5;
@@ -220,5 +227,6 @@ body {
   grid-column: 2 / 3;
   grid-row: 4;
   grid-template-columns: 30% 70%;
+  background-color: white;
 }
 </style>
