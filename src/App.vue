@@ -1,24 +1,52 @@
 <script setup>
-import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js";
+import ColorPalettesRange from "./index.min.js";
 
 // import { RouterLink, RouterView } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import { computed } from "vue";
+const colorsWave = [
+  {
+    startColor: new ColorPalettesRange.Hsl({
+      hue: 21,
+      saturation: 46,
+      brightness: 48,
+    }),
+    endColor: new ColorPalettesRange.Hsl({
+      hue: 174,
+      saturation: 25,
+      brightness: 52,
+    }),
+  },
+  {
+    startColor: new ColorPalettesRange.Hsl({
+      hue: 150,
+      saturation: 25,
+      brightness: 52,
+    }),
+    endColor: new ColorPalettesRange.Hsl({
+      hue: 250,
+      saturation: 25,
+      brightness: 52,
+    }),
+  },
+];
 
-//rust color
-const BrownRust = new ColorPalettesRange.Hsl({
-  hue: 21,
-  saturation: 46,
-  brightness: 49,
+const rand = Math.floor(Math.random() * (1 - 0 + 1) + 0);
+console.log(rand);
+const palette = ColorPalettesRange.SetColorPalette(colorsWave[rand].startColor);
+const gradientWave1 = palette
+  .gradient({ numColors: 10, endColor: colorsWave[rand].endColor })
+  .sort(() => Math.random() - 0.5);
+const waveColors = { wave1: [], wave2: [] };
+
+gradientWave1.forEach((element) => {
+  waveColors.wave1.push(element.printHex());
 });
 
-const CadetBlue = new ColorPalettesRange.Hsl({
-  hue: 174,
-  saturation: 25,
-  brightness: 56,
+gradientWave1.reverse().forEach((element) => {
+  waveColors.wave2.push(element.printHex());
 });
-
 //TODO Color Palette add generate gradient from two colors - this is for waves
 
 //TODO Genarate from this two colors different palettes
@@ -38,28 +66,12 @@ const colors = [
   },
 ];
 
-// TODO change colors
-const waveColors = {
-  wave1: [
-    "#c85b28",
-    "#bd6335",
-    "#a17857",
-    "#749b8e",
-    "#58b0b0",
-    "#b46a41",
-    "#a67552",
-    "#81907e",
-    "#66a59f",
-  ],
-  wave2: ["#58b0b0", "#749b8e", "#b46a41", "#a67552", "#81907e", "#66a59f"],
-};
-
 const start = computed(() => {
-  return colors[1].start;
+  return colorsWave[rand].startColor.printHex();
 });
 
 const stop = computed(() => {
-  return colors[1].stop;
+  return colorsWave[rand].endColor.printHex();
 });
 </script>
 <template>
