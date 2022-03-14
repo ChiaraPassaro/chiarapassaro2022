@@ -1,11 +1,50 @@
 <script setup>
-import ColorPalettesRange from "./index.min.js";
+import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
+import { DateTime } from "luxon";
 
 // import { RouterLink, RouterView } from "vue-router";
+import { ref } from "vue";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import { computed } from "vue";
+
 const colorsWave = [
+  {
+    startColor: new ColorPalettesRange.Hsl({
+      hue: 180,
+      saturation: 59,
+      brightness: 55,
+    }),
+    endColor: new ColorPalettesRange.Hsl({
+      hue: 208,
+      saturation: 45,
+      brightness: 75,
+    }),
+  },
+  {
+    startColor: new ColorPalettesRange.Hsl({
+      hue: 180,
+      saturation: 79,
+      brightness: 55,
+    }),
+    endColor: new ColorPalettesRange.Hsl({
+      hue: 208,
+      saturation: 65,
+      brightness: 65,
+    }),
+  },
+  {
+    startColor: new ColorPalettesRange.Hsl({
+      hue: 355,
+      saturation: 97,
+      brightness: 56,
+    }),
+    endColor: new ColorPalettesRange.Hsl({
+      hue: 32,
+      saturation: 76,
+      brightness: 60,
+    }),
+  },
   {
     startColor: new ColorPalettesRange.Hsl({
       hue: 21,
@@ -31,53 +70,47 @@ const colorsWave = [
     }),
   },
 ];
+const now = DateTime.now().setZone("Europe/Rome").hour;
+const whatColor = Math.floor(now / 5);
 
-const rand = Math.floor(Math.random() * (1 - 0 + 1) + 0);
-console.log(rand);
-const palette = ColorPalettesRange.SetColorPalette(colorsWave[rand].startColor);
-const gradientWave1 = palette
-  .gradient({ numColors: 10, endColor: colorsWave[rand].endColor })
-  .sort(() => Math.random() - 0.5);
+const palette = ColorPalettesRange.SetColorPalette(
+  colorsWave[whatColor].startColor
+);
+const gradientWave1 = palette.gradient({
+  numColors: 10,
+  endColor: colorsWave[whatColor].endColor,
+});
 const waveColors = { wave1: [], wave2: [] };
 
-gradientWave1.forEach((element) => {
-  waveColors.wave1.push(element.printHex());
+waveColors.wave1 = gradientWave1.map((element) => {
+  return element.printHex();
 });
 
-gradientWave1.reverse().forEach((element) => {
-  waveColors.wave2.push(element.printHex());
+waveColors.wave2 = gradientWave1.reverse().map((element) => {
+  return element.printHex();
 });
-//TODO Color Palette add generate gradient from two colors - this is for waves
-
-//TODO Genarate from this two colors different palettes
-//TODO complementary rage and pick first and last
-const colors = [
-  {
-    start: "#b46a41",
-    stop: "#66a59f",
-  },
-  {
-    start: "#b69b54",
-    stop: "#b654af",
-  },
-  {
-    start: "#b05858",
-    stop: "#2895c8",
-  },
-];
 
 const start = computed(() => {
-  return colorsWave[rand].startColor.printHex();
+  return colorsWave[whatColor].startColor.printHex();
 });
 
 const stop = computed(() => {
-  return colorsWave[rand].endColor.printHex();
+  return colorsWave[whatColor].endColor.printHex();
 });
 </script>
+
 <template>
   <div class="container" :style="`--start: ${start}; --stop: ${stop};`">
     <Header class="header"></Header>
+
     <div class="wave">
+      <!-- <div
+        v-for="color in gradientWave1"
+        :key="color"
+        :style="`background: ${color.printHex()};`"
+      >
+        {{ color.printHsl() }}
+      </div> -->
       <Wave :colors="waveColors"></Wave>
     </div>
 
@@ -199,7 +232,9 @@ body {
     grid-row: 3 / 5;
     background-color: white;
     height: 100%;
-
+    svg {
+      filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+    }
     @media screen and (max-width: $sm) {
       position: relative;
       grid-column: 3/5;
