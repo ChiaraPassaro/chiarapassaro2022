@@ -1,12 +1,20 @@
 <script setup>
+//Vue
+import { reactive, computed, onMounted, ref } from "vue";
+import Header from "@/components/Header.vue";
+import Wave from "@/components/Wave.vue";
+
+// colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
 import { DateTime } from "luxon";
 
-// import { RouterLink, RouterView } from "vue-router";
-import { ref } from "vue";
-import Header from "@/components/Header.vue";
-import Wave from "@/components/Wave.vue";
-import { computed } from "vue";
+//cytoscape
+import cytoscape from "cytoscape";
+import cola from "cytoscape-cola";
+import elements from "./data/elements.js";
+cytoscape.use(cola);
+
+const state = reactive({ aside: false });
 
 const colorsWave = [
   {
@@ -97,6 +105,49 @@ const start = computed(() => {
 const stop = computed(() => {
   return colorsWave[whatColor].endColor.printHex();
 });
+
+//map container
+const map = ref(null);
+onMounted(() => {
+  const graph = cytoscape({
+    container: map.value,
+    autounselectify: true,
+    boxSelectionEnabled: false,
+    layout: {
+      name: "cola",
+      nodeDimensionsIncludeLabels: false,
+      fit: true,
+      edgeLength: 32,
+    },
+    style: [
+      {
+        selector: "node",
+        style: {
+          "background-color": stop.value,
+          label: "data(label)",
+          "font-size": "5",
+          width: "data(size)",
+          height: "data(size)",
+        },
+      },
+      {
+        selector: "edge",
+        css: {
+          width: 0.4,
+          "line-color": start.value,
+        },
+      },
+    ],
+    elements,
+  }).on("tap", "node", function (evt) {
+    const node = evt.target;
+    console.log("tapped " + node.id());
+    //open modal
+
+    state.aside = true;
+    console.log(state.aside);
+  });
+});
 </script>
 
 <template>
@@ -113,8 +164,16 @@ const stop = computed(() => {
       </div> -->
       <Wave :colors="waveColors"></Wave>
     </div>
-
-    <footer class="footer"></footer>
+    <aside v-show="state.aside" class="aside">
+      <i class="fa-solid fa-circle-xmark"></i>
+      <div class="aside__content">
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus nisi,
+        unde nam aspernatur placeat eveniet veritatis laboriosam similique, ex
+        adipisci minima nobis nihil, numquam vero dolorum. Quisquam eligendi
+        saepe qui?
+      </div>
+    </aside>
+    <footer class="footer" id="map" ref="map"></footer>
   </div>
   <div class="container-bottom" :style="`--start: ${start}; --stop: ${stop};`">
     <main class="main content">
@@ -258,6 +317,18 @@ body {
     grid-row: 4;
     grid-template-columns: 30% 70%;
     background-color: white;
+  }
+
+  .aside {
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    padding: 1em;
   }
 }
 
