@@ -14,8 +14,10 @@ import cola from "cytoscape-cola";
 import elements from "./data/elements.js";
 cytoscape.use(cola);
 
+//State
 const state = reactive({ aside: false });
 
+// Setup Colors
 const colorsWave = [
   {
     startColor: new ColorPalettesRange.Hsl({
@@ -88,25 +90,24 @@ const gradientWave1 = palette.gradient({
   numColors: 10,
   endColor: colorsWave[whatColor].endColor,
 });
-const waveColors = { wave1: [], wave2: [] };
 
+const waveColors = { wave1: [], wave2: [] };
 waveColors.wave1 = gradientWave1.map((element) => {
   return element.printHex();
 });
-
 waveColors.wave2 = gradientWave1.reverse().map((element) => {
   return element.printHex();
 });
 
+// computed
 const start = computed(() => {
   return colorsWave[whatColor].startColor.printHex();
 });
-
 const stop = computed(() => {
   return colorsWave[whatColor].endColor.printHex();
 });
 
-//map container
+//map container on mounted
 const map = ref(null);
 onMounted(() => {
   const graph = cytoscape({
@@ -148,6 +149,12 @@ onMounted(() => {
     console.log(state.aside);
   });
 });
+
+//methods
+function closeAside() {
+  console.log("click");
+  state.aside = false;
+}
 </script>
 
 <template>
@@ -165,7 +172,9 @@ onMounted(() => {
       <Wave :colors="waveColors"></Wave>
     </div>
     <aside v-show="state.aside" class="aside">
-      <i class="fa-solid fa-circle-xmark"></i>
+      <div class="close" @click="closeAside">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </div>
       <div class="aside__content">
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus nisi,
         unde nam aspernatur placeat eveniet veritatis laboriosam similique, ex
