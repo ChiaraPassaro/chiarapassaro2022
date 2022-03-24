@@ -132,6 +132,22 @@ const lineMap = computed(() => {
   return baseColor.printHex();
 });
 
+let percStart = ref(0);
+let up = false;
+setInterval(() => {
+  if (percStart.value === 100) {
+    up = true;
+  }
+  if (percStart.value === 0) {
+    up = false;
+  }
+  if (!up) {
+    percStart.value = percStart.value + 2;
+  } else {
+    percStart.value = percStart.value - 2;
+  }
+}, 100);
+
 //Elements map
 const elements = {
   nodes: [
@@ -357,101 +373,105 @@ const elements = {
 //map container on mounted
 const map = ref(null);
 onMounted(() => {
-  const graph = cytoscape({
-    container: map.value,
-    autounselectify: true,
-    boxSelectionEnabled: false,
-    pannable: false,
-    layout: {
-      name: "cola",
-      animate: true,
-      refresh: 1,
-      maxSimulationTime: 30000,
-      fit: true,
-      padding: 20,
-      nodeDimensionsIncludeLabels: false,
-      randomize: false,
-      avoidOverlap: true,
-      handleDisconnected: true,
-      convergenceThreshold: 0.01,
-      nodeSpacing: function (node) {
-        return 18;
-      },
-      edgeLength: 40, // sets edge length directly in simulation
-    },
-    style: [
-      {
-        selector: "node",
-        style: {
-          "background-color": start.value,
-          label: "data(label)",
-          color: "data(color)",
-          "font-size": "8",
-          width: "data(size)",
-          height: "data(size)",
-          "border-width": "0.2",
-          "border-style": "solid",
-          "border-color": lineMap.value,
+  setTimeout(() => {
+    const graph = cytoscape({
+      container: map.value,
+      autounselectify: true,
+      boxSelectionEnabled: false,
+      pannable: false,
+      layout: {
+        name: "cola",
+        animate: true,
+        refresh: 1,
+        maxSimulationTime: 30000,
+        fit: true,
+        padding: 20,
+        nodeDimensionsIncludeLabels: false,
+        randomize: false,
+        avoidOverlap: true,
+        handleDisconnected: true,
+        convergenceThreshold: 0.01,
+        nodeSpacing: function (node) {
+          return 18;
         },
+        edgeLength: 40, // sets edge length directly in simulation
       },
-      {
-        selector: "edge",
-        css: {
-          width: 0.4,
-          "line-color": lineMap.value,
-        },
-      },
-    ],
-    elements,
-  })
-    .on("mouseover", "node", function (evt) {
-      const node = evt.target;
-      if (node.data("aside")) {
-        const label = node.style("label");
-        node.style("label", "Open " + label);
-      }
-    })
-    .on("mouseout", "node", function (evt) {
-      const node = evt.target;
-      if (node.data("aside")) {
-        const label = node.style("label").replace("Open", "");
-        node.style("label", label);
-      }
-    })
-    .on("tap", "node", function (evt) {
-      const node = evt.target;
-      //open modal
-      if (node.data("aside")) {
-        const type = node.data("name");
-
-        router.push({
-          name: "articles",
-          params: {
-            type: type,
+      style: [
+        {
+          selector: "node",
+          style: {
+            "background-color": start.value,
+            label: "data(label)",
+            color: "data(color)",
+            "font-size": "10",
+            width: "data(size)",
+            height: "data(size)",
+            "border-width": "0.2",
+            "border-style": "solid",
+            "border-color": lineMap.value,
           },
-        });
-        state.aside = true;
-      }
+        },
+        {
+          selector: "edge",
+          css: {
+            width: 0.4,
+            "line-color": lineMap.value,
+          },
+        },
+      ],
+      elements,
     })
-    .on("layoutstop", function () {
-      this.nodes()
-        .filter(function (ele) {
-          return ele.data("aside");
-        })
-        .forEach((element) => {
-          const jAni = element.animation({
-            style: {
-              width: element.data("size") + 4,
-              height: element.data("size") + 4,
-            },
-            duration: 1000,
-          });
+      .on("mouseover", "node", function (evt) {
+        const node = evt.target;
+        if (node.data("aside")) {
+          const label = node.style("label");
+          node.style("label", "Open " + label);
+        }
+      })
+      .on("mouseout", "node", function (evt) {
+        const node = evt.target;
+        if (node.data("aside")) {
+          const label = node.style("label").replace("Open", "");
+          node.style("label", label);
+        }
+      })
+      .on("tap", "node", function (evt) {
+        const node = evt.target;
+        //open modal
+        if (node.data("aside")) {
+          const type = node.data("name");
+          const label = node.style("label").replace("Open", "");
+          node.style("label", label);
 
-          setInterval(() => {
-            jAni.play().reverse();
-          }, 3000);
-        });
-    });
+          router.push({
+            name: "articles",
+            params: {
+              type: type,
+            },
+          });
+          state.aside = true;
+        }
+      })
+      .on("layoutstop", function () {
+        this.nodes()
+          .filter(function (ele) {
+            return ele.data("aside");
+          })
+          .forEach((element) => {
+            const jAni = element.animation({
+              style: {
+                width: element.data("size") + 4,
+                height: element.data("size") + 4,
+              },
+              duration: 1000,
+            });
+
+            setInterval(() => {
+              jAni.play().reverse();
+            }, 3000);
+          });
+      });
+  }, 1000);
 });
 
 //methods
@@ -464,7 +484,10 @@ function closeAside() {
 </script>
 
 <template>
-  <div class="container" :style="`--start: ${start}; --stop: ${stop};`">
+  <div
+    class="container"
+    :style="`--start: ${start}; --stop: ${stop}; --percStart: ${percStart}%;`"
+  >
     <Header class="header"></Header>
 
     <div class="wave">
@@ -482,7 +505,7 @@ function closeAside() {
   <div
     class="container-bottom"
     :class="{ fixed: state.aside }"
-    :style="`--start: ${start}; --stop: ${stop};`"
+    :style="`--start: ${start}; --stop: ${stop}; --percStart: ${percStart}%;`"
   >
     <main class="main content">
       <RouterView />
@@ -499,17 +522,6 @@ function closeAside() {
 </template>
 
 <style lang="scss">
-//TODO add min height
-@mixin title {
-  background: radial-gradient(circle, var(--start) 0%, var(--stop) 100%);
-  background-clip: text;
-  color: transparent;
-  -webkit-background-clip: text;
-  // -webkit-text-fill-color: transparent;
-
-  text-align: right;
-}
-
 // variables
 $xs: 798px;
 $sm: 1200px;
@@ -518,6 +530,21 @@ $sm: 1200px;
   --bg-header: #fff;
   --start: "";
   --stop: "";
+  --percStart: 0%;
+}
+
+@mixin title {
+  background: radial-gradient(
+    circle,
+    var(--start) var(--percStart),
+    var(--stop) 100%
+  );
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  // -webkit-text-fill-color: transparent;
+
+  text-align: right;
 }
 
 * {
@@ -551,7 +578,7 @@ body {
   width: 100%;
 
   @media screen and (max-width: 678px) {
-    grid-template-rows: 15% 50% 8% 27%;
+    grid-template-rows: 15% 30% 8% 47%;
   }
 
   .header {
@@ -652,6 +679,9 @@ body {
   background-color: black;
   color: white;
   padding: 2em;
+  @media screen and (max-width: $sm) {
+    width: 100%;
+  }
 }
 
 // Container bottom zindex text content
