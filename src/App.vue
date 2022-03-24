@@ -149,226 +149,224 @@ setInterval(() => {
 }, 100);
 
 //Elements map
-const elements = {
-  nodes: [
-    {
-      data: {
-        id: "1",
-        label: "Articles",
-        name: "all",
-        size: 3,
-        aside: true,
-        color: label.value,
-      },
+const elements = [
+  {
+    data: {
+      id: "1",
+      label: "Articles",
+      name: "all",
+      size: 3,
+      aside: true,
+      color: label.value,
     },
+    position: {
+      x: -10000,
+      y: -2000,
+    },
+  },
 
-    {
-      data: {
-        id: "2",
-        label: "Projects",
-        name: "project",
-        size: 3,
-        aside: false,
-        color: label.value,
-      },
+  {
+    data: {
+      id: "2",
+      label: "Projects",
+      name: "project",
+      size: 3,
+      aside: false,
+      color: label.value,
     },
-    {
-      data: {
-        id: "3",
-        label: "Javascript",
-        name: "javascript",
-        size: 2,
-        aside: true,
-        color: "black",
-      },
+    position: {
+      x: 10000,
+      y: 500,
     },
-    {
-      data: {
-        id: "4",
-        label: "Ergonomics",
-        name: "ergonomics",
-        size: 2,
-        aside: true,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "3",
+      label: "Javascript",
+      name: "javascript",
+      size: 2,
+      aside: true,
+      color: "black",
     },
-    {
-      data: {
-        id: "5",
-        label: "Vuejs",
-        name: "vuejs",
-        size: 2,
-        aside: true,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "4",
+      label: "Ergonomics",
+      name: "ergonomics",
+      size: 2,
+      aside: true,
+      color: "black",
     },
-    {
-      data: {
-        id: "6",
-        label: "Teaching",
-        name: "teaching",
-        size: 3,
-        aside: false,
-        color: label.value,
-      },
+  },
+  {
+    data: {
+      id: "5",
+      label: "Vuejs",
+      name: "vuejs",
+      size: 2,
+      aside: true,
+      color: "black",
     },
-    {
-      data: {
-        id: "7",
-        label: "HTML",
-        name: "html",
-        size: 2,
-        aside: false,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "6",
+      label: "Teaching",
+      name: "teaching",
+      size: 3,
+      aside: false,
+      color: label.value,
     },
+  },
+  {
+    data: {
+      id: "7",
+      label: "HTML",
+      name: "html",
+      size: 2,
+      aside: false,
+      color: "black",
+    },
+  },
 
-    {
-      data: {
-        id: "8",
-        label: "Laravel",
-        name: "laravel",
-        size: 2,
-        aside: false,
-        color: "black",
-      },
+  {
+    data: {
+      id: "8",
+      label: "Laravel",
+      name: "laravel",
+      size: 2,
+      aside: false,
+      color: "black",
     },
-    {
-      data: {
-        id: "9",
-        label: "Color Palettes Range",
-        name: "colorPalettesRange",
-        size: 2,
-        aside: true,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "9",
+      label: "Color Palettes Range",
+      name: "colorPalettesRange",
+      size: 2,
+      aside: true,
+      color: "black",
     },
-    {
-      data: {
-        id: "10",
-        label: "Vue Gantt",
-        name: "vueGantt",
-        size: 2,
-        aside: true,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "10",
+      label: "Vue Gantt",
+      name: "vueGantt",
+      size: 2,
+      aside: true,
+      color: "black",
     },
-    {
-      data: {
-        id: "11",
-        label: "NPM",
-        name: "npm",
-        size: 3,
-        aside: false,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "11",
+      label: "NPM",
+      name: "npm",
+      size: 3,
+      aside: false,
+      color: "black",
     },
-    {
-      data: {
-        id: "12",
-        label: "SASS",
-        name: "sass",
-        size: 2,
-        aside: false,
-        color: "black",
-      },
+  },
+  {
+    data: {
+      id: "12",
+      label: "SASS",
+      name: "sass",
+      size: 2,
+      aside: false,
+      color: "black",
     },
-  ],
-  edges: [
-    {
-      data: {
-        source: "3",
-        target: "1",
-      },
+  },
+  {
+    data: {
+      source: "3",
+      target: "1",
     },
-    {
-      data: {
-        source: "1",
-        target: "4",
-      },
+  },
+  {
+    data: {
+      source: "1",
+      target: "4",
     },
+  },
 
-    {
-      data: {
-        source: "1",
-        target: "5",
-      },
+  {
+    data: {
+      source: "1",
+      target: "5",
     },
-    {
-      data: {
-        source: "1",
-        target: "4",
-      },
+  },
+  {
+    data: {
+      source: "1",
+      target: "4",
     },
-    {
-      data: {
-        source: "2",
-        target: "5",
-      },
+  },
+  {
+    data: {
+      source: "2",
+      target: "5",
     },
-    {
-      data: {
-        source: "2",
-        target: "12",
-      },
+  },
+  {
+    data: {
+      source: "2",
+      target: "12",
     },
-    {
-      data: {
-        source: "2",
-        target: "9",
-      },
+  },
+  {
+    data: {
+      source: "2",
+      target: "9",
     },
-    {
-      data: {
-        source: "2",
-        target: "11",
-      },
+  },
+  {
+    data: {
+      source: "2",
+      target: "11",
     },
-    {
-      data: {
-        source: "2",
-        target: "10",
-      },
+  },
+  {
+    data: {
+      source: "2",
+      target: "10",
     },
-    {
-      data: {
-        source: "6",
-        target: "4",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "3",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "7",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "12",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "8",
-      },
-    },
+  },
 
-    {
-      data: {
-        source: "4",
-        target: "5",
-      },
+  {
+    data: {
+      source: "6",
+      target: "3",
     },
-  ],
-};
+  },
+  {
+    data: {
+      source: "6",
+      target: "7",
+    },
+  },
+  {
+    data: {
+      source: "6",
+      target: "12",
+    },
+  },
+  {
+    data: {
+      source: "6",
+      target: "8",
+    },
+  },
+  {
+    data: {
+      source: "6",
+      target: "5",
+    },
+  },
+];
 
 //map container on mounted
 const map = ref(null);
@@ -379,13 +377,14 @@ onMounted(() => {
       autounselectify: true,
       boxSelectionEnabled: false,
       pannable: false,
+      userZoomingEnabled: false,
       layout: {
         name: "cola",
         animate: true,
         refresh: 1,
         maxSimulationTime: 30000,
         fit: true,
-        padding: 20,
+        padding: 30,
         nodeDimensionsIncludeLabels: false,
         randomize: false,
         avoidOverlap: true,
@@ -394,7 +393,7 @@ onMounted(() => {
         nodeSpacing: function (node) {
           return 18;
         },
-        edgeLength: 40, // sets edge length directly in simulation
+        edgeLength: 40,
       },
       style: [
         {
@@ -406,7 +405,7 @@ onMounted(() => {
             "font-size": "10",
             width: "data(size)",
             height: "data(size)",
-            "border-width": "0.2",
+            "border-width": "0.6",
             "border-style": "solid",
             "border-color": lineMap.value,
           },
@@ -468,10 +467,10 @@ onMounted(() => {
 
             setInterval(() => {
               jAni.play().reverse();
-            }, 3000);
+            }, 2000);
           });
       });
-  }, 1000);
+  }, 300);
 });
 
 //methods
@@ -491,16 +490,17 @@ function closeAside() {
     <Header class="header"></Header>
 
     <div class="wave">
-      <!-- <div
-        v-for="color in gradientWave1"
-        :key="color"
-        :style="`background: ${color.printHex()};`"
-      >
-        {{ color.printHsl() }}
-      </div> -->
       <Wave :colors="waveColors"></Wave>
     </div>
     <footer class="footer" id="map" ref="map"></footer>
+    <aside :class="{ move: state.aside }" class="aside">
+      <a class="close" @click.prevent="closeAside">
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <div class="aside__content">
+        <RouterView name="aside" />
+      </div>
+    </aside>
   </div>
   <div
     class="container-bottom"
@@ -511,14 +511,6 @@ function closeAside() {
       <RouterView />
     </main>
   </div>
-  <aside v-show="state.aside" class="aside">
-    <div class="close" @click="closeAside">
-      <i class="fa-solid fa-circle-xmark"></i>
-    </div>
-    <div class="aside__content">
-      <RouterView name="aside" />
-    </div>
-  </aside>
 </template>
 
 <style lang="scss">
@@ -576,6 +568,7 @@ body {
   grid-template-rows: 15% 30% 8% 47%;
   height: 100vh;
   width: 100%;
+  overflow: hidden;
 
   @media screen and (max-width: 678px) {
     grid-template-rows: 15% 30% 8% 47%;
@@ -673,7 +666,7 @@ body {
   position: absolute;
   z-index: 100;
   top: 0;
-  right: 0;
+  left: 100%;
   width: 70%;
   min-height: 100vh;
   background-color: black;
@@ -681,6 +674,17 @@ body {
   padding: 2em;
   @media screen and (max-width: $sm) {
     width: 100%;
+  }
+  transition: left 1s;
+  &.move {
+    left: 30%;
+    @media screen and (max-width: $sm) {
+      left: 0;
+    }
+  }
+  .close {
+    font-size: 4em;
+    cursor: pointer;
   }
 }
 
