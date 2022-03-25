@@ -401,7 +401,7 @@ function initGraph() {
           "background-color": start.value,
           label: "data(label)",
           color: "data(color)",
-          "font-size": "10",
+          "font-size": "9",
           width: "data(size)",
           height: "data(size)",
           "border-width": "0.6",
@@ -524,7 +524,9 @@ onMounted(() => {
     class="container"
     :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
       state.isDark ? 'white' : 'black'
-    }; --bg: ${state.isDark ? 'black' : 'white'};`"
+    }; --bg: ${state.isDark ? 'black' : 'white'};  --bg-aside: ${
+      state.isDark ? '#212121' : 'black'
+    };`"
   >
     <Header class="header"></Header>
 
@@ -563,6 +565,7 @@ $sm: 1200px;
   --start: "";
   --stop: "";
   --bg: white;
+  --bg-aside: black;
   --text-color: white;
 }
 
@@ -612,9 +615,10 @@ body {
   position: fixed;
   top: 0.5em;
   left: 0.5em;
-  font-size: 1.3em;
   z-index: 10;
+  font-size: 1.3em;
   color: var(--text-color);
+  cursor: pointer;
 }
 // container top zindex
 .container {
@@ -730,7 +734,7 @@ body {
   width: 70%;
   height: 100vh;
   padding: 2em;
-  background-color: black;
+  background-color: var(--bg-aside);
   color: white;
   overflow: auto;
   @media screen and (max-width: $sm) {
