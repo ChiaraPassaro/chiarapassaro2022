@@ -132,22 +132,6 @@ const lineMap = computed(() => {
   return baseColor.printHex();
 });
 
-let percStart = ref(0);
-let up = false;
-setInterval(() => {
-  if (percStart.value === 100) {
-    up = true;
-  }
-  if (percStart.value === 0) {
-    up = false;
-  }
-  if (!up) {
-    percStart.value = percStart.value + 2;
-  } else {
-    percStart.value = percStart.value - 2;
-  }
-}, 100);
-
 //Elements map
 const elements = [
   {
@@ -248,8 +232,8 @@ const elements = [
   {
     data: {
       id: "9",
-      label: "Color Palettes Range",
-      name: "colorPalettesRange",
+      label: "Color Palettes Range NPM",
+      name: "colorPalettesRangeNpm",
       tag: "project",
       size: 2,
       aside: true,
@@ -269,21 +253,22 @@ const elements = [
   },
   {
     data: {
-      id: "11",
-      label: "NPM",
-      name: "npm",
-      size: 3,
+      id: "12",
+      label: "SASS",
+      name: "sass",
+      size: 2,
       aside: false,
       color: "black",
     },
   },
   {
     data: {
-      id: "12",
-      label: "SASS",
-      name: "sass",
+      id: "13",
+      label: "Color Palettes Range App",
+      name: "colorPalettesRangeApp",
+      tag: "project",
       size: 2,
-      aside: false,
+      aside: true,
       color: "black",
     },
   },
@@ -333,12 +318,6 @@ const elements = [
   {
     data: {
       source: "2",
-      target: "11",
-    },
-  },
-  {
-    data: {
-      source: "2",
       target: "10",
     },
   },
@@ -373,6 +352,12 @@ const elements = [
       target: "5",
     },
   },
+  {
+    data: {
+      source: "2",
+      target: "13",
+    },
+  },
 ];
 
 //map container on mounted
@@ -380,6 +365,7 @@ const map = ref(null);
 onMounted(() => {
   setTimeout(() => {
     const graph = cytoscape({
+      hideEdgesOnViewport: true,
       container: map.value,
       autounselectify: true,
       boxSelectionEnabled: false,
@@ -482,9 +468,9 @@ onMounted(() => {
               duration: 1000,
             });
 
-            setInterval(() => {
-              jAni.play().reverse();
-            }, 1500);
+            setTimeout(() => {
+              jAni.play();
+            }, 1100);
           });
       });
   }, 300);
@@ -500,10 +486,7 @@ function closeAside() {
 </script>
 
 <template>
-  <div
-    class="container"
-    :style="`--start: ${start}; --stop: ${stop}; --percStart: ${percStart}%;`"
-  >
+  <div class="container" :style="`--start: ${start}; --stop: ${stop};`">
     <Header class="header"></Header>
 
     <div class="wave">
@@ -518,14 +501,14 @@ function closeAside() {
         <RouterView name="aside" />
       </div>
       <a class="close" @click.prevent="closeAside">
-        <i class="fa-solid fa-arrow-right"></i> <span>Close</span>
+        <i id="arrow" class="fa-solid fa-arrow-right"></i> <span>Close</span>
       </a>
     </aside>
   </div>
   <div
     class="container-bottom"
     :class="{ fixed: state.aside }"
-    :style="`--start: ${start}; --stop: ${stop}; --percStart: ${percStart}%;`"
+    :style="`--start: ${start}; --stop: ${stop};`"
   >
     <main class="main content">
       <RouterView />
@@ -545,18 +528,17 @@ $sm: 1200px;
   --percStart: 0%;
 }
 
-@mixin title {
-  background: radial-gradient(
-    circle,
-    var(--start) var(--percStart),
-    var(--stop) 100%
-  );
+@mixin radial {
+  text-align: right;
+  animation: alternate;
+  animation-duration: 2s;
+  animation-name: gradient;
+  animation-iteration-count: infinite;
+  background: radial-gradient(circle, var(--start) 0, var(--stop) 100%);
   background-clip: text;
   color: transparent;
   -webkit-background-clip: text;
-  // -webkit-text-fill-color: transparent;
-
-  text-align: right;
+  -webkit-text-fill-color: transparent;
 }
 
 * {
@@ -609,7 +591,7 @@ body {
     }
 
     &__title {
-      @include title;
+      @include radial;
       grid-column-start: 1;
       grid-row-start: 1;
 
@@ -696,6 +678,7 @@ body {
   overflow: auto;
   @media screen and (max-width: $sm) {
     width: 100%;
+    font-size: 0.6em;
   }
   transition: left 1s;
   &.move {
@@ -715,6 +698,15 @@ body {
     cursor: pointer;
     span {
       font-size: 0.5em;
+    }
+  }
+  a {
+    @include radial;
+    &:hover {
+      color: var(--stop);
+    }
+    svg {
+      color: var(--stop);
     }
   }
 }
@@ -750,7 +742,7 @@ body {
 
   .content {
     &__title {
-      @include title;
+      @include radial;
 
       @media screen and (max-width: $sm) {
         text-align: left;
@@ -760,6 +752,159 @@ body {
       font-weight: 400;
       font-size: 1.8em;
     }
+  }
+}
+
+.mouseover {
+  cursor: pointer;
+}
+@keyframes gradient {
+  0% {
+    background: radial-gradient(circle, var(--start) 0%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  5% {
+    background: radial-gradient(circle, var(--start) 5%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  10% {
+    background: radial-gradient(circle, var(--start) 10%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  15% {
+    background: radial-gradient(circle, var(--start) 15%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  20% {
+    background: radial-gradient(circle, var(--start) 20%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  25% {
+    background: radial-gradient(circle, var(--start) 25%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  30% {
+    background: radial-gradient(circle, var(--start) 30%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  35% {
+    background: radial-gradient(circle, var(--start) 35%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  40% {
+    background: radial-gradient(circle, var(--start) 40%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  45% {
+    background: radial-gradient(circle, var(--start) 45%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  50% {
+    background: radial-gradient(circle, var(--start) 50%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  55% {
+    background: radial-gradient(circle, var(--start) 55%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  60% {
+    background: radial-gradient(circle, var(--start) 60%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  65% {
+    background: radial-gradient(circle, var(--start) 65%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  70% {
+    background: radial-gradient(circle, var(--start) 70%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  75% {
+    background: radial-gradient(circle, var(--start) 75%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  80% {
+    background: radial-gradient(circle, var(--start) 80%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  85% {
+    background: radial-gradient(circle, var(--start) 85%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  90% {
+    background: radial-gradient(circle, var(--start) 90%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  95% {
+    background: radial-gradient(circle, var(--start) 95%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  100% {
+    background: radial-gradient(circle, var(--start) 100%, var(--stop) 100%);
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 </style>
