@@ -56,5 +56,8 @@ onMounted(() => {
   img {
     width: 50%;
   }
+  figure video {
+    width: 80%;
+  }
 }
 </style>

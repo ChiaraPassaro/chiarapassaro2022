@@ -1,30 +1,47 @@
 <template>
   <article>
-    <img :src="thumb" :alt="title" />
-    <h3>
-      <a :href="link" target="_blank">{{ title }}</a>
-    </h3>
+    <a :href="link" target="_blank"
+      ><img class="thumb" :src="thumb" :alt="title"
+    /></a>
+    <div>
+      <h3>
+        <a :href="link" target="_blank">{{ title }}</a>
+      </h3>
+      <div>{{ content }}</div>
+    </div>
   </article>
 </template>
 
 <script setup>
-defineProps(["title", "thumb", "link"]);
+defineProps(["title", "thumb", "link", "content"]);
 </script>
 
 <style lang="scss" scoped>
 article {
   display: flex;
   align-items: flex-start;
-  gap: 1em;
-}
-a {
-  color: white;
-  text-decoration: none;
-}
-img {
-  width: 20%;
-  height: 80px;
-  object-fit: cover;
-  margin-bottom: 1em;
+  gap: 10%;
+  width: 40%;
+  margin-bottom: 2em;
+  h3 {
+    font-size: 2em;
+    margin: 0;
+  }
+  a {
+    color: white;
+    text-decoration: none;
+    width: 40%;
+    height: 100%;
+  }
+  div {
+    width: 60%;
+  }
+  img.thumb {
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    object-fit: cover;
+    filter: grayscale(1) sepia(0.3);
+  }
 }
 </style>

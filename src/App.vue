@@ -1,6 +1,7 @@
 <script setup>
 //Vue
 import { reactive, computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 
@@ -8,18 +9,19 @@ import Wave from "@/components/Wave.vue";
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
 import { DateTime } from "luxon";
 
-import { useRouter } from "vue-router";
-
 //cytoscape
 import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
 cytoscape.use(cola);
 
+const router = useRouter();
+
 //State
 const state = reactive({
   aside: false,
+  isDark: false,
+  graph: {},
 });
-const router = useRouter();
 
 // Setup Colors
 const colorsWave = [
@@ -126,6 +128,10 @@ const label = computed(() => {
   return color.printHex();
 });
 
+const labelSecondary = computed(() => {
+  return state.isDark ? "white" : "black";
+});
+
 const lineMap = computed(() => {
   const baseColor = colorsWave[whatColor].endColor;
   baseColor.setBrightness(90);
@@ -144,7 +150,7 @@ const elements = [
       aside: true,
       color: label.value,
     },
-    position: {
+    renderedPosition: {
       x: -10000,
       y: -2000,
     },
@@ -160,7 +166,7 @@ const elements = [
       aside: false,
       color: label.value,
     },
-    position: {
+    renderedPosition: {
       x: 10000,
       y: 500,
     },
@@ -173,7 +179,7 @@ const elements = [
       tag: "articles",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -184,7 +190,7 @@ const elements = [
       tag: "articles",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -195,7 +201,7 @@ const elements = [
       tag: "articles",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -215,7 +221,7 @@ const elements = [
       name: "html",
       size: 2,
       aside: false,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
 
@@ -226,7 +232,7 @@ const elements = [
       name: "laravel",
       size: 2,
       aside: false,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -237,7 +243,7 @@ const elements = [
       tag: "project",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -248,7 +254,7 @@ const elements = [
       tag: "project",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -258,7 +264,7 @@ const elements = [
       name: "sass",
       size: 2,
       aside: false,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -269,7 +275,7 @@ const elements = [
       tag: "project",
       size: 2,
       aside: true,
-      color: "black",
+      color: labelSecondary.value,
     },
   },
   {
@@ -360,133 +366,166 @@ const elements = [
   },
 ];
 
-//map container on mounted
+//setup map
 const map = ref(null);
-onMounted(() => {
-  setTimeout(() => {
-    const graph = cytoscape({
-      hideEdgesOnViewport: true,
-      container: map.value,
-      autounselectify: true,
-      boxSelectionEnabled: false,
-      pannable: false,
-      userZoomingEnabled: false,
-      layout: {
-        name: "cola",
-        animate: true,
-        refresh: 1,
-        maxSimulationTime: 30000,
-        fit: true,
-        padding: 30,
-        nodeDimensionsIncludeLabels: false,
-        randomize: false,
-        avoidOverlap: true,
-        handleDisconnected: true,
-        convergenceThreshold: 0.01,
-        nodeSpacing: function (node) {
-          return 18;
-        },
-        edgeLength: 40,
+
+function initGraph() {
+  return cytoscape({
+    hideEdgesOnViewport: true,
+    container: map.value,
+    autounselectify: true,
+    boxSelectionEnabled: false,
+    pannable: false,
+    userZoomingEnabled: false,
+    layout: {
+      name: "cola",
+      animate: true,
+      refresh: 1,
+      maxSimulationTime: 30000,
+      fit: true,
+      padding: 30,
+      nodeDimensionsIncludeLabels: false,
+      randomize: false,
+      avoidOverlap: true,
+      handleDisconnected: true,
+      convergenceThreshold: 0.01,
+      nodeSpacing: function (node) {
+        return 18;
       },
-      style: [
-        {
-          selector: "node",
-          style: {
-            "background-color": start.value,
-            label: "data(label)",
-            color: "data(color)",
-            "font-size": "10",
-            width: "data(size)",
-            height: "data(size)",
-            "border-width": "0.6",
-            "border-style": "solid",
-            "border-color": lineMap.value,
-          },
+      edgeLength: 40,
+    },
+    style: [
+      {
+        selector: "node",
+        style: {
+          "background-color": start.value,
+          label: "data(label)",
+          color: "data(color)",
+          "font-size": "10",
+          width: "data(size)",
+          height: "data(size)",
+          "border-width": "0.6",
+          "border-style": "solid",
+          "border-color": lineMap.value,
         },
-        {
-          selector: "edge",
-          css: {
-            width: 0.4,
-            "line-color": lineMap.value,
-          },
+      },
+      {
+        selector: "edge",
+        css: {
+          width: 0.4,
+          "line-color": lineMap.value,
         },
-      ],
-      elements,
+      },
+    ],
+    elements,
+  })
+    .on("mouseover", "node", function (event) {
+      const node = event.target;
+      if (node.data("aside")) {
+        node.style("background-color", stop.value);
+        const label = node.style("label");
+        node.style("label", "Open " + label);
+      }
     })
-      .on("mouseover", "node", function (evt) {
-        const node = evt.target;
-        if (node.data("aside")) {
-          const label = node.style("label");
-          node.style("label", "Open " + label);
-        }
-      })
-      .on("mouseout", "node", function (evt) {
-        const node = evt.target;
-        if (node.data("aside")) {
-          const label = node.style("label").replace("Open", "");
-          node.style("label", label);
-        }
-      })
-      .on("tap", "node", function (evt) {
-        const node = evt.target;
-        //open modal
-        if (node.data("aside")) {
-          const name = node.data("name");
-          const label = node.style("label").replace("Open", "");
-          node.style("label", label);
+    .on("mouseout", "node", function (event) {
+      const node = event.target;
+      if (node.data("aside")) {
+        node.style("background-color", start.value);
+        const label = node.style("label").replace("Open", "");
+        node.style("label", label);
+      }
+    })
+    .on("tap", "node", function (event) {
+      const node = event.target;
+      //open modal
+      if (node.data("aside")) {
+        const name = node.data("name");
+        const label = node.style("label").replace("Open", "");
+        node.style("label", label);
 
-          if (node.data("tag") === "articles") {
-            router.push({
-              name: "articles",
-              params: {
-                type: name,
-              },
-            });
-          } else if (node.data("tag") === "project") {
-            router.push({
-              name: "projects",
-              params: {
-                name,
-              },
-            });
-          }
-
-          state.aside = true;
-        }
-      })
-      .on("layoutstop", function () {
-        this.nodes()
-          .filter(function (ele) {
-            return ele.data("aside");
-          })
-          .forEach((element) => {
-            const jAni = element.animation({
-              style: {
-                width: element.data("size") + 4,
-                height: element.data("size") + 4,
-              },
-              duration: 1000,
-            });
-
-            setTimeout(() => {
-              jAni.play();
-            }, 1100);
+        if (node.data("tag") === "articles") {
+          router.push({
+            name: "articles",
+            params: {
+              type: name,
+            },
           });
-      });
-  }, 300);
-});
+        } else if (node.data("tag") === "project") {
+          router.push({
+            name: "projects",
+            params: {
+              name,
+            },
+          });
+        }
 
-//methods
+        state.aside = true;
+      }
+    })
+    .on("layoutstop", function () {
+      this.nodes()
+        .filter(function (element) {
+          return element.data("aside");
+        })
+        .forEach((element) => {
+          const jAni = element.animation({
+            style: {
+              width: element.data("size") + 4,
+              height: element.data("size") + 4,
+            },
+            duration: 1000,
+          });
+
+          setTimeout(() => {
+            jAni.play();
+          }, 1100);
+        });
+    });
+}
+
+function reloadMap() {
+  console.log(labelSecondary.value);
+  state.graph
+    .nodes()
+    .forEach((element) =>
+      element.data("color") !== label.value
+        ? element.data("color", labelSecondary.value)
+        : label.value
+    );
+  state.graph.destroy();
+  state.graph = initGraph();
+}
+
+//aside
 function closeAside() {
   router.push({
     name: "home",
   });
   state.aside = false;
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    state.graph = initGraph();
+  }, 300);
+});
 </script>
 
 <template>
-  <div class="container" :style="`--start: ${start}; --stop: ${stop};`">
+  <div
+    class="dark-mode"
+    @click="(state.isDark = !state.isDark), reloadMap()"
+    :style="`--text-color: ${state.isDark ? 'white' : 'black'}; `"
+  >
+    <i class="fa-solid fa-lightbulb" v-show="!state.isDark"></i>
+    <i class="fa-regular fa-lightbulb" v-show="state.isDark"></i>
+  </div>
+  <div
+    class="container"
+    :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
+      state.isDark ? 'white' : 'black'
+    }; --bg: ${state.isDark ? 'black' : 'white'};`"
+  >
     <Header class="header"></Header>
 
     <div class="wave">
@@ -500,15 +539,14 @@ function closeAside() {
       <div class="aside__content">
         <RouterView name="aside" />
       </div>
-      <a class="close" @click.prevent="closeAside">
-        <i id="arrow" class="fa-solid fa-arrow-right"></i> <span>Close</span>
-      </a>
     </aside>
   </div>
   <div
     class="container-bottom"
-    :class="{ fixed: state.aside }"
-    :style="`--start: ${start}; --stop: ${stop};`"
+    :class="{ fixed: state.aside, dark: state.isDark }"
+    :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
+      state.isDark ? 'white' : 'black'
+    }; --bg: ${state.isDark ? 'black' : 'white'};`"
   >
     <main class="main content">
       <RouterView />
@@ -522,10 +560,10 @@ $xs: 798px;
 $sm: 1200px;
 
 :root {
-  --bg-header: #fff;
   --start: "";
   --stop: "";
-  --percStart: 0%;
+  --bg: white;
+  --text-color: white;
 }
 
 @mixin radial {
@@ -547,6 +585,10 @@ $sm: 1200px;
   box-sizing: border-box;
 }
 
+a:hover {
+  filter: invert(0.8);
+}
+
 body {
   font-family: "Roboto", sans-serif;
 
@@ -560,10 +602,20 @@ body {
 
   font-size: 1vmax;
 }
+
 #app {
   overflow: hidden;
+  background-color: var(--bg);
 }
 
+.dark-mode {
+  position: fixed;
+  top: 0.5em;
+  left: 0.5em;
+  font-size: 1.3em;
+  z-index: 10;
+  color: var(--text-color);
+}
 // container top zindex
 .container {
   position: fixed;
@@ -577,13 +629,19 @@ body {
     grid-template-rows: 15% 30% 8% 47%;
   }
 
+  .wave,
+  .header,
+  .footer {
+    background-color: var(--bg);
+  }
+
   .header {
     display: grid;
     align-items: center;
     grid-template-columns: 30% 1fr;
     grid-column: 2 / 3;
     grid-row: 1;
-    background-color: white;
+
     gap: 1em;
 
     @media screen and (max-width: $sm) {
@@ -617,7 +675,7 @@ body {
       font-weight: 400;
       font-size: 1em;
       line-height: 1.1em;
-      color: var(--orange);
+      color: var(--stop);
 
       @media screen and (max-width: $sm) {
         text-align: left;
@@ -631,7 +689,7 @@ body {
     display: grid;
     grid-column: 1 / 4;
     grid-row: 3 / 5;
-    background-color: white;
+
     height: 100%;
 
     svg {
@@ -661,7 +719,6 @@ body {
     grid-column: 2 / 3;
     grid-row: 4;
     grid-template-columns: 30% 70%;
-    background-color: white;
   }
 }
 
@@ -690,16 +747,22 @@ body {
       display: flex;
     }
   }
+
   .close {
     display: none;
+    position: fixed;
+    top: 1em;
+    right: 1em;
     align-items: center;
     gap: 0.2em;
     font-size: 3em;
+    z-index: 3;
     cursor: pointer;
     span {
       font-size: 0.5em;
     }
   }
+
   a {
     @include radial;
     &:hover {
@@ -719,7 +782,10 @@ body {
   z-index: 0;
   position: relative;
   height: 120vh;
-  margin-bottom: 30%;
+  margin-bottom: 20%;
+
+  background-color: var(--bg);
+  color: var(--text-color);
 
   &.fixed {
     position: fixed;
@@ -755,9 +821,7 @@ body {
   }
 }
 
-.mouseover {
-  cursor: pointer;
-}
+// animation
 @keyframes gradient {
   0% {
     background: radial-gradient(circle, var(--start) 0%, var(--stop) 100%);

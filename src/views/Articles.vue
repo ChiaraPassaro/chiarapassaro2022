@@ -2,15 +2,19 @@
   <div class="content">
     <h2>
       {{ type.slice(0, 1).toUpperCase() + type.slice(1, type.length) }} Articles
+      on <a href="https://medium.com/@chiarapassaro">Medium</a>
     </h2>
     <!-- list articles -->
-    <Article
-      v-for="(article, index) in state.articles"
-      :title="article.title"
-      :link="article.link"
-      :thumb="article.thumbnail"
-      :key="index"
-    />
+    <div class="articles__wrapper">
+      <Article
+        v-for="(article, index) in state.articles"
+        :title="article.title"
+        :link="article.link"
+        :thumb="article.thumbnail"
+        :key="index"
+        :content="filter(article.content)"
+      />
+    </div>
   </div>
 </template>
 
@@ -52,6 +56,14 @@ watch(
   () => route.params.type,
   (newType) => fetchArticle(newType)
 );
+
+function filter(content) {
+  const div = document.createElement("div");
+  div.innerHTML = content;
+  return (
+    div.textContent.substring(1, 200) || div.innerText.substring(1, 200) || ""
+  );
+}
 // author:"Chiara Passaro"
 // categories:Array[5]
 // content:""
@@ -66,5 +78,10 @@ watch(
 <style lang="scss" scoped>
 h2 {
   margin: 2em 0;
+}
+.articles__wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10%;
 }
 </style>
