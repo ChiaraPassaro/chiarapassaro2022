@@ -16,7 +16,9 @@
     "axios": "^0.26.1",
     "cytoscape": "^3.21.0",
     "cytoscape-cola": "^2.5.1",
+    "highlight.js": "^11.5.0",
     "luxon": "^2.3.1",
+    "marked": "^4.0.12",
     "remove": "^0.1.5",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"

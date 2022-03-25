@@ -155,6 +155,7 @@ const elements = [
       id: "1",
       label: "Articles",
       name: "all",
+      tag: "articles",
       size: 3,
       aside: true,
       color: label.value,
@@ -170,6 +171,7 @@ const elements = [
       id: "2",
       label: "Projects",
       name: "project",
+      tag: "project",
       size: 3,
       aside: false,
       color: label.value,
@@ -184,6 +186,7 @@ const elements = [
       id: "3",
       label: "Javascript",
       name: "javascript",
+      tag: "articles",
       size: 2,
       aside: true,
       color: "black",
@@ -194,6 +197,7 @@ const elements = [
       id: "4",
       label: "Ergonomics",
       name: "ergonomics",
+      tag: "articles",
       size: 2,
       aside: true,
       color: "black",
@@ -204,6 +208,7 @@ const elements = [
       id: "5",
       label: "Vuejs",
       name: "vuejs",
+      tag: "articles",
       size: 2,
       aside: true,
       color: "black",
@@ -245,6 +250,7 @@ const elements = [
       id: "9",
       label: "Color Palettes Range",
       name: "colorPalettesRange",
+      tag: "project",
       size: 2,
       aside: true,
       color: "black",
@@ -255,6 +261,7 @@ const elements = [
       id: "10",
       label: "Vue Gantt",
       name: "vueGantt",
+      tag: "project",
       size: 2,
       aside: true,
       color: "black",
@@ -438,16 +445,26 @@ onMounted(() => {
         const node = evt.target;
         //open modal
         if (node.data("aside")) {
-          const type = node.data("name");
+          const name = node.data("name");
           const label = node.style("label").replace("Open", "");
           node.style("label", label);
 
-          router.push({
-            name: "articles",
-            params: {
-              type: type,
-            },
-          });
+          if (node.data("tag") === "articles") {
+            router.push({
+              name: "articles",
+              params: {
+                type: name,
+              },
+            });
+          } else if (node.data("tag") === "project") {
+            router.push({
+              name: "projects",
+              params: {
+                name,
+              },
+            });
+          }
+
           state.aside = true;
         }
       })
@@ -467,7 +484,7 @@ onMounted(() => {
 
             setInterval(() => {
               jAni.play().reverse();
-            }, 2000);
+            }, 1500);
           });
       });
   }, 300);
@@ -495,11 +512,14 @@ function closeAside() {
     <footer class="footer" id="map" ref="map"></footer>
     <aside :class="{ move: state.aside }" class="aside">
       <a class="close" @click.prevent="closeAside">
-        <i class="fa-solid fa-arrow-right"></i>
+        <i class="fa-solid fa-arrow-right"></i> <span>Close</span>
       </a>
       <div class="aside__content">
         <RouterView name="aside" />
       </div>
+      <a class="close" @click.prevent="closeAside">
+        <i class="fa-solid fa-arrow-right"></i> <span>Close</span>
+      </a>
     </aside>
   </div>
   <div
@@ -558,6 +578,9 @@ body {
 
   font-size: 1vmax;
 }
+#app {
+  overflow: hidden;
+}
 
 // container top zindex
 .container {
@@ -568,8 +591,6 @@ body {
   grid-template-rows: 15% 30% 8% 47%;
   height: 100vh;
   width: 100%;
-  overflow: hidden;
-
   @media screen and (max-width: 678px) {
     grid-template-rows: 15% 30% 8% 47%;
   }
@@ -668,10 +689,11 @@ body {
   top: 0;
   left: 100%;
   width: 70%;
-  min-height: 100vh;
+  height: 100vh;
+  padding: 2em;
   background-color: black;
   color: white;
-  padding: 2em;
+  overflow: auto;
   @media screen and (max-width: $sm) {
     width: 100%;
   }
@@ -681,10 +703,19 @@ body {
     @media screen and (max-width: $sm) {
       left: 0;
     }
+    .close {
+      display: flex;
+    }
   }
   .close {
-    font-size: 4em;
+    display: none;
+    align-items: center;
+    gap: 0.2em;
+    font-size: 3em;
     cursor: pointer;
+    span {
+      font-size: 0.5em;
+    }
   }
 }
 
