@@ -9,7 +9,7 @@ import Wave from "@/components/Wave.vue";
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
 import { DateTime } from "luxon";
 
-//cytoscape
+//cytoscape form Map
 import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
 cytoscape.use(cola);
@@ -23,7 +23,7 @@ const state = reactive({
   graph: {},
 });
 
-// Setup Colors
+// Setup Colors for wave and fonts
 const colorsWave = [
   {
     startColor: new ColorPalettesRange.Hsl({
@@ -87,9 +87,11 @@ const colorsWave = [
   },
 ];
 
+//colors depending on the time
 const now = DateTime.now().setZone("Europe/Rome").hour;
 const whatColor = Math.floor(now / 5);
 
+//Set palettes
 const palette = ColorPalettesRange.SetColorPalette(
   colorsWave[whatColor].startColor
 );
@@ -512,6 +514,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <!-- ico dark mode -->
   <div
     class="dark-mode"
     @click="(state.isDark = !state.isDark), reloadMap()"
@@ -520,29 +523,38 @@ onMounted(() => {
     <i class="fa-solid fa-lightbulb" v-show="!state.isDark"></i>
     <i class="fa-regular fa-lightbulb" v-show="state.isDark"></i>
   </div>
+  <!-- /ico dark mode -->
+
+  <!-- container top -->
   <div
     class="container"
-    :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
-      state.isDark ? 'white' : 'black'
-    }; --bg: ${state.isDark ? 'black' : 'white'};  --bg-aside: ${
-      state.isDark ? '#212121' : 'black'
-    };`"
+    :style="`
+    --start: ${start}; --stop: ${stop}; 
+    --text-color: ${state.isDark ? 'white' : 'black'}; 
+    --bg: ${state.isDark ? 'black' : 'white'};  
+    --bg-aside: ${state.isDark ? '#212121' : 'black'};`"
   >
-    <Header class="header"></Header>
+    <Header class="header" />
 
     <div class="wave">
-      <Wave :colors="waveColors"></Wave>
+      <Wave :colors="waveColors" />
     </div>
+
     <footer class="footer" id="map" ref="map"></footer>
+
     <aside :class="{ move: state.aside }" class="aside">
       <a class="close" @click.prevent="closeAside">
         <i class="fa-solid fa-arrow-right"></i> <span>Close</span>
       </a>
       <div class="aside__content">
+        <!-- aside router view -->
         <RouterView name="aside" />
       </div>
     </aside>
   </div>
+  <!-- /container top -->
+
+  <!-- container bottom -->
   <div
     class="container-bottom"
     :class="{ fixed: state.aside, dark: state.isDark }"
@@ -551,9 +563,11 @@ onMounted(() => {
     }; --bg: ${state.isDark ? 'black' : 'white'};`"
   >
     <main class="main content">
+      <!-- main router view -->
       <RouterView />
     </main>
   </div>
+  <!-- /container bottom -->
 </template>
 
 <style lang="scss">
@@ -616,7 +630,7 @@ body {
   top: 0.5em;
   left: 0.5em;
   z-index: 10;
-  font-size: 1.3em;
+  font-size: 1.7em;
   color: var(--text-color);
   cursor: pointer;
 }
