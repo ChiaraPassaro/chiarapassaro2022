@@ -27,6 +27,12 @@
     excepturi, facere itaque praesentium quam, alias ex expedita, perferendis
     nam sed quisquam. Soluta quibusdam at mollitia dolore natus tenetur odit.
   </p>
+  <h3 class="content__title">My repos</h3>
+  <p>
+    <a href="https://github.com/ChiaraPassaro" target="_blank"
+      >Github <i class="fa-brands fa-github"></i
+    ></a>
+  </p>
 </template>
 
 <style lang="scss"></style>

@@ -593,33 +593,21 @@ onMounted(() => {
     --stop: ${stop}; 
     --text-color: ${!state.footerIsOpen && state.isDark ? 'white' : 'black'}; 
     --bg-aside: ${state.isDark ? '#212121' : 'black'};
-    --bg: ${!state.footerIsOpen && state.isDark ? 'black' : 'white'};
+    --bg: ${
+      (state.isDark && !state.footerIsOpen) ||
+      (!state.isDark && state.footerIsOpen)
+        ? 'black'
+        : 'white'
+    };
     `"
   >
-    <Header
-      class="header"
-      :style="`
-        --bg: ${
-          !state.footerIsOpen && state.isDark
-            ? 'black'
-            : state.footerIsOpen && !state.isDark
-            ? 'black'
-            : 'white'
-        }`"
-    />
+    <Header class="header" />
+    <main class="main content">
+      <!-- main router view -->
+      <RouterView />
+    </main>
 
-    <div
-      class="wave"
-      v-if="state.waveColors?.wave1"
-      :style="`
-       --bg: ${
-         !state.footerIsOpen && state.isDark
-           ? 'black'
-           : state.footerIsOpen && !state.isDark
-           ? 'black'
-           : 'white'
-       }`"
-    >
+    <div class="wave" v-if="state.waveColors?.wave1">
       <Wave :colors="state.waveColors" />
     </div>
 
@@ -633,12 +621,13 @@ onMounted(() => {
           (!state.isDark && state.footerIsOpen)
             ? 'white'
             : 'black'
-        }; --text-color:${
-        (state.isDark && !state.footerIsOpen) ||
-        (!state.isDark && state.footerIsOpen)
-          ? 'black'
-          : 'white'
-      }`"
+        }; 
+        --text-color:${
+          (state.isDark && !state.footerIsOpen) ||
+          (!state.isDark && state.footerIsOpen)
+            ? 'black'
+            : 'white'
+        }`"
     >
       <i class="fa-solid fa-diagram-project"></i>
       <span>{{ !state.footerIsOpen ? "Open" : "Close" }} Graph</span>
@@ -677,32 +666,6 @@ onMounted(() => {
     <!-- /ico dark mode -->
   </div>
   <!-- /container top -->
-
-  <!-- container bottom -->
-  <div
-    class="container-bottom"
-    :class="{
-      fixed: state.aside || state.footerIsOpen,
-    }"
-    :style="`
-      --start: ${start}; 
-      --stop: ${stop}; 
-      --text-color: ${state.isDark ? 'white' : 'black'}; 
-      --bg: ${
-        !state.footerIsOpen && state.isDark
-          ? 'black'
-          : state.footerIsOpen && !state.isDark
-          ? 'black'
-          : 'white'
-      };
-    `"
-  >
-    <main class="main content">
-      <!-- main router view -->
-      <RouterView />
-    </main>
-  </div>
-  <!-- /container bottom -->
 </template>
 
 <style lang="scss">
@@ -778,7 +741,7 @@ body {
   color: var(--text-color);
   cursor: pointer;
 }
-// container top zindex
+
 .container {
   position: fixed;
   z-index: 1;
@@ -787,14 +750,17 @@ body {
   grid-template-rows: 15% 30% 8% 47%;
   height: 100%;
   width: 100%;
+  background-color: var(--bg);
+  transition: all 2s;
+
   @media screen and (max-width: $sm) {
     grid-template-columns: 8% 80% 15%;
-    grid-template-rows: 20% 30%;
+    grid-template-rows: 15% auto;
   }
 
-  .wave,
   .header,
-  .footer {
+  .footer,
+  .main {
     background-color: var(--bg);
     transition: all 2s;
   }
@@ -805,9 +771,8 @@ body {
     grid-template-columns: 30% 1fr;
     grid-column: 2 / 3;
     grid-row: 1;
-
     gap: 1em;
-
+    z-index: 2;
     @media screen and (max-width: $sm) {
       grid-template-columns: auto;
     }
@@ -842,9 +807,9 @@ body {
       color: var(--stop);
 
       @media screen and (max-width: $sm) {
-        text-align: left;
         grid-column-start: auto;
         grid-row-start: auto;
+        text-align: left;
       }
     }
   }
@@ -852,8 +817,9 @@ body {
   .wave {
     display: grid;
     grid-column: 1 / 4;
-    grid-row: 3 / 5;
+    grid-row: 3;
     height: 100%;
+    z-index: 3;
 
     svg {
       filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
@@ -862,26 +828,55 @@ body {
     @media screen and (max-width: $sm) {
       position: relative;
       grid-column: 3/5;
-      grid-row: 1/5;
+      grid-row: 1/6;
 
       .wave-container {
-        transform: rotate(90deg);
-        transform-origin: left top;
         position: absolute;
-        z-index: 1;
         top: 0;
         right: -100vmax;
         width: 100vmax;
+        transform: rotate(90deg);
+        transform-origin: left top;
       }
     }
   }
 
+  .main {
+    grid-column: 2 / 4;
+    grid-row-start: 2;
+    grid-row-end: 6;
+    gap: 1em;
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    z-index: 1;
+    padding-bottom: 30%;
+    padding-right: 15%;
+    overflow: auto;
+    color: var(--text-color);
+    @media screen and (max-width: $sm) {
+      grid-template-columns: auto;
+    }
+  }
+
+  .content {
+    &__title {
+      @include radial;
+
+      @media screen and (max-width: $sm) {
+        padding-top: 1em;
+        text-align: left;
+      }
+
+      font-weight: 400;
+      font-size: 1.8em;
+    }
+  }
   .footer {
     display: grid;
-    z-index: 0;
     grid-template-columns: 30% 70%;
     grid-column: 2 / 3;
     grid-row: 4;
+    z-index: 2;
 
     @media screen and (max-width: $sm) {
       display: block;
@@ -962,10 +957,10 @@ body {
     position: fixed;
     top: 1em;
     right: 1em;
+    z-index: 3;
     align-items: center;
     gap: 0.2em;
     font-size: 2rem;
-    z-index: 3;
     cursor: pointer;
     span {
       font-size: 0.5em;
@@ -979,60 +974,6 @@ body {
     }
     svg {
       color: var(--stop);
-    }
-  }
-}
-
-// Container bottom zindex text content
-.container-bottom {
-  position: relative;
-  z-index: 0;
-  display: grid;
-  grid-template-columns: 5% 80% 15%;
-  grid-template-rows: 15% auto;
-
-  background-color: var(--bg);
-  color: var(--text-color);
-  will-change: background-color;
-  transition: all 2s;
-  @media screen and (max-width: $sm) {
-    grid-template-columns: 8% 80% 15%;
-    grid-template-rows: 5% auto;
-    font-size: 1.5em;
-  }
-  @media screen and (min-width: $sm) {
-    margin-bottom: 100vh;
-  }
-  &.fixed {
-    position: fixed;
-  }
-
-  .main {
-    padding-bottom: 100vh;
-    grid-column: 2 / 3;
-    grid-row-start: 2;
-    grid-row-end: 5;
-    gap: 1em;
-    z-index: 0;
-    display: grid;
-    grid-template-columns: 30% 1fr;
-
-    @media screen and (max-width: $sm) {
-      grid-template-columns: auto;
-    }
-  }
-
-  .content {
-    &__title {
-      @include radial;
-
-      @media screen and (max-width: $sm) {
-        text-align: left;
-        padding-top: 1em;
-      }
-
-      font-weight: 400;
-      font-size: 1.8em;
     }
   }
 }
