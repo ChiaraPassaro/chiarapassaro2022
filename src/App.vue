@@ -470,6 +470,26 @@ watch(
 
 // Lifecycle Hooks
 onMounted(() => {
+  //dark mode with prefers-color-scheme
+
+  state.isDark =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  //change dark mode listener
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (event) => {
+      state.isDark = event.matches;
+      document.getElementById("app").style.backgroundColor = state.isDark
+        ? "black"
+        : "white";
+    });
+
+  document.getElementById("app").style.backgroundColor = state.isDark
+    ? "black"
+    : "white";
+
   //set time
   state.now = DateTime.now().setZone("Europe/Rome").hour;
 
@@ -550,6 +570,11 @@ onMounted(() => {
   setTimeout(() => {
     state.graph = initGraph();
   }, 300);
+
+  //resize graph
+  window.addEventListener("resize", () => {
+    state.graph = initGraph();
+  });
 });
 </script>
 
@@ -665,7 +690,6 @@ body {
 
 #app {
   overflow: hidden;
-  background-color: var(--bg);
 }
 
 .dark-mode {
