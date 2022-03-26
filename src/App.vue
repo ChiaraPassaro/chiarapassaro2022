@@ -80,13 +80,13 @@ const elements = computed(() => {
         label: "Articles",
         name: "all",
         tag: "articles",
-        size: 3,
+        size: 6,
         aside: true,
         color: label.value,
       },
       renderedPosition: {
         x: -10000,
-        y: -2000,
+        y: window.innerHeight > 1200 ? -1000 : 3000,
       },
     },
 
@@ -96,13 +96,13 @@ const elements = computed(() => {
         label: "Projects",
         name: "project",
         tag: "project",
-        size: 3,
+        size: 6,
         aside: false,
         color: label.value,
       },
       renderedPosition: {
-        x: 10000,
-        y: 500,
+        x: -1000,
+        y: window.innerHeight > 1200 ? 500 : 10000,
       },
     },
     {
@@ -111,7 +111,7 @@ const elements = computed(() => {
         label: "Javascript",
         name: "javascript",
         tag: "articles",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -122,7 +122,7 @@ const elements = computed(() => {
         label: "Ergonomics",
         name: "ergonomics",
         tag: "articles",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -133,7 +133,7 @@ const elements = computed(() => {
         label: "Vuejs",
         name: "vuejs",
         tag: "articles",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -143,7 +143,7 @@ const elements = computed(() => {
         id: "6",
         label: "Teaching",
         name: "teaching",
-        size: 3,
+        size: 6,
         aside: false,
         color: label.value,
       },
@@ -153,7 +153,7 @@ const elements = computed(() => {
         id: "7",
         label: "HTML",
         name: "html",
-        size: 2,
+        size: 5,
         aside: false,
         color: labelSecondary.value,
       },
@@ -164,7 +164,7 @@ const elements = computed(() => {
         id: "8",
         label: "Laravel",
         name: "laravel",
-        size: 2,
+        size: 5,
         aside: false,
         color: labelSecondary.value,
       },
@@ -175,7 +175,7 @@ const elements = computed(() => {
         label: "Color Palettes Range NPM",
         name: "colorPalettesRangeNpm",
         tag: "project",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -186,7 +186,7 @@ const elements = computed(() => {
         label: "Vue Gantt",
         name: "vueGantt",
         tag: "project",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -196,7 +196,7 @@ const elements = computed(() => {
         id: "12",
         label: "SASS",
         name: "sass",
-        size: 2,
+        size: 5,
         aside: false,
         color: labelSecondary.value,
       },
@@ -207,7 +207,7 @@ const elements = computed(() => {
         label: "Color Palettes Range App",
         name: "colorPalettesRangeApp",
         tag: "project",
-        size: 2,
+        size: 5,
         aside: true,
         color: labelSecondary.value,
       },
@@ -360,7 +360,7 @@ function initGraph() {
           "background-color": start.value,
           label: "data(label)",
           color: "data(color)",
-          "font-size": "9",
+          "font-size": window.innerWidth > 1024 ? "9" : "12",
           width: "data(size)",
           height: "data(size)",
           "border-width": "0.6",
@@ -429,8 +429,8 @@ function initGraph() {
         .forEach((element) => {
           const jAni = element.animation({
             style: {
-              width: element.data("size") + 4,
-              height: element.data("size") + 4,
+              width: element.data("size") + 10,
+              height: element.data("size") + 10,
             },
             duration: 1000,
           });
@@ -478,14 +478,11 @@ onMounted(() => {
     window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  //change dark mode listener
+  // change dark mode listener
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
       state.isDark = event.matches;
-      document.getElementById("app").style.backgroundColor = state.isDark
-        ? "black"
-        : "white";
     });
 
   document.getElementById("app").style.backgroundColor = state.isDark
@@ -587,22 +584,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- ico dark mode -->
-  <div
-    class="dark-mode"
-    @click="(state.isDark = !state.isDark), reloadGraph()"
-    :style="`--text-color: ${
-      (!state.footerIsOpen && state.isDark) ||
-      (!state.isDark && state.footerIsOpen)
-        ? 'white'
-        : 'black'
-    }; `"
-  >
-    <i class="fa-solid fa-lightbulb" v-show="!state.isDark"></i>
-    <i class="fa-regular fa-lightbulb" v-show="state.isDark"></i>
-  </div>
-  <!-- /ico dark mode -->
-
   <!-- container top -->
   <div
     class="container"
@@ -647,7 +628,17 @@ onMounted(() => {
       @click="(state.footerIsOpen = !state.footerIsOpen), reloadGraph()"
       :class="{ open: state.footerIsOpen }"
       :style="`
-        --bg: ${state.isDark ? 'black' : 'white'}`"
+        --bg: ${
+          (state.isDark && !state.footerIsOpen) ||
+          (!state.isDark && state.footerIsOpen)
+            ? 'white'
+            : 'black'
+        }; --text-color:${
+        (state.isDark && !state.footerIsOpen) ||
+        (!state.isDark && state.footerIsOpen)
+          ? 'black'
+          : 'white'
+      }`"
     >
       <i class="fa-solid fa-diagram-project"></i>
       <span>{{ !state.footerIsOpen ? "Open" : "Close" }} Graph</span>
@@ -670,6 +661,20 @@ onMounted(() => {
         <RouterView name="aside" />
       </div>
     </aside>
+    <!-- ico dark mode -->
+    <div
+      class="dark-mode"
+      @click="(state.isDark = !state.isDark), reloadGraph()"
+      :style="`--text-color: ${
+        (!state.footerIsOpen && state.isDark) ||
+        (!state.isDark && state.footerIsOpen)
+          ? 'white'
+          : 'black'
+      }; `"
+    >
+      <i class="fa-solid fa-lightbulb"></i>
+    </div>
+    <!-- /ico dark mode -->
   </div>
   <!-- /container top -->
 
@@ -738,8 +743,15 @@ $sm: 1200px;
 a:hover {
   filter: invert(0.8);
 }
+html {
+  font-size: 100%;
+  height: -webkit-fill-available;
+}
 
 body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+
   font-family: "Roboto", sans-serif;
 
   @media screen and (max-width: $sm) {
@@ -759,9 +771,9 @@ body {
 
 .dark-mode {
   position: fixed;
-  top: 0.8vw;
-  left: 0.8vh;
-  z-index: 10;
+  top: 0.8%;
+  left: 0.8%;
+  z-index: 4;
   font-size: 1.7em;
   color: var(--text-color);
   cursor: pointer;
@@ -773,7 +785,7 @@ body {
   display: grid;
   grid-template-columns: 5% 80% 15%;
   grid-template-rows: 15% 30% 8% 47%;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   @media screen and (max-width: $sm) {
     grid-template-rows: 15% 30%;
@@ -840,7 +852,6 @@ body {
     display: grid;
     grid-column: 1 / 4;
     grid-row: 3 / 5;
-
     height: 100%;
 
     svg {
@@ -874,15 +885,15 @@ body {
     @media screen and (max-width: $sm) {
       display: block;
       position: fixed;
-      top: 100vh;
+      top: 100%;
       left: 0;
       width: 100%;
-      height: 79vh;
-      padding-right: 4vh;
+      height: 79%;
+      padding-right: 4%;
       will-change: top;
       transition: 2s top;
       &.open {
-        top: 21vh;
+        top: 21%;
       }
     }
   }
@@ -903,7 +914,7 @@ body {
     will-change: bottom;
     transition: 2s bottom;
     &.open {
-      bottom: calc(79vh - 1px);
+      bottom: 79%;
     }
     span {
       @include radial();
@@ -920,18 +931,18 @@ body {
 
 .aside {
   position: absolute;
-  z-index: 100;
+  z-index: 5;
   top: 0;
   left: 100%;
   width: 70%;
-  height: 100vh;
+  height: 100%;
   padding: 2em;
   background-color: var(--bg-aside);
   color: white;
   overflow: auto;
   @media screen and (max-width: $sm) {
     width: 100%;
-    font-size: 0.6em;
+    font-size: 1.5em;
   }
   will-change: left;
   transition: left 1s;
@@ -952,7 +963,7 @@ body {
     right: 1em;
     align-items: center;
     gap: 0.2em;
-    font-size: 3em;
+    font-size: 2rem;
     z-index: 3;
     cursor: pointer;
     span {
@@ -978,12 +989,15 @@ body {
   display: grid;
   grid-template-columns: 5% 80% 15%;
   grid-template-rows: 15% auto;
-  height: 120vh;
 
   background-color: var(--bg);
   color: var(--text-color);
   will-change: background-color;
   transition: all 2s;
+  @media screen and (max-width: $sm) {
+    font-size: 1.5em;
+    grid-template-rows: 5% auto;
+  }
   @media screen and (min-width: $sm) {
     margin-bottom: 100vh;
   }

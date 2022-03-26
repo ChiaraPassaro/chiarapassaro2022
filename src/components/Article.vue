@@ -17,14 +17,21 @@ defineProps(["title", "thumb", "link", "content"]);
 </script>
 
 <style lang="scss" scoped>
+// Mediaquery
+$xs: 798px;
+$sm: 1200px;
 article {
   display: flex;
   align-items: flex-start;
   gap: 10%;
   width: 40%;
   margin-bottom: 2em;
+  word-wrap: break-word;
+  @media screen and (max-width: $sm) {
+    width: 90%;
+  }
   h3 {
-    font-size: 2em;
+    font-size: 1.6em;
     margin: 0;
   }
   a {
@@ -33,7 +40,7 @@ article {
     width: 40%;
     height: 100%;
   }
-  div {
+  > div {
     width: 60%;
   }
   img.thumb {
