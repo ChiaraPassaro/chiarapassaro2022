@@ -20,7 +20,7 @@ const router = useRouter();
 const state = reactive({
   aside: false,
   isDark: false,
-  footerIsOpen: true,
+  footerIsOpen: false,
   graph: {},
   colorsWave: [],
   now: {},
@@ -466,7 +466,7 @@ watch(
   () => whatColor.value, //if change reload colors and graph
   () => {
     initColors();
-    state.graph = state.footerIsOpen ?? initGraph();
+    state.graph = initGraph();
   }
 );
 
@@ -577,6 +577,7 @@ onMounted(() => {
 
   //resize graph
   window.addEventListener("resize", () => {
+    state.footerIsOpen = false;
     if (state.graph) {
       state.graph.destroy();
     }
@@ -590,7 +591,12 @@ onMounted(() => {
   <div
     class="dark-mode"
     @click="(state.isDark = !state.isDark), reloadGraph()"
-    :style="`--text-color: ${state.isDark ? 'white' : 'black'}; `"
+    :style="`--text-color: ${
+      (!state.footerIsOpen && state.isDark) ||
+      (!state.isDark && state.footerIsOpen)
+        ? 'white'
+        : 'black'
+    }; `"
   >
     <i class="fa-solid fa-lightbulb" v-show="!state.isDark"></i>
     <i class="fa-regular fa-lightbulb" v-show="state.isDark"></i>
@@ -602,25 +608,46 @@ onMounted(() => {
     class="container"
     :class="{ dark: state.isDark }"
     :style="`
-    --start: ${start}; --stop: ${stop}; 
-    --text-color: ${state.isDark ? 'white' : 'black'}; 
-    --bg: ${state.isDark ? 'black' : 'white'};  
-    --bg-aside: ${state.isDark ? '#212121' : 'black'};`"
+    --start: ${start}; 
+    --stop: ${stop}; 
+    --text-color: ${!state.footerIsOpen && state.isDark ? 'white' : 'black'}; 
+    --bg-aside: ${state.isDark ? '#212121' : 'black'};
+    --bg: ${!state.footerIsOpen && state.isDark ? 'black' : 'white'};
+    `"
   >
-    <Header class="header" :class="{ darken: state.footerIsOpen }" />
+    <Header
+      class="header"
+      :style="`
+        --bg: ${
+          !state.footerIsOpen && state.isDark
+            ? 'black'
+            : state.footerIsOpen && !state.isDark
+            ? 'black'
+            : 'white'
+        }`"
+    />
 
     <div
       class="wave"
       v-if="state.waveColors?.wave1"
-      :class="{ darken: state.footerIsOpen }"
+      :style="`
+       --bg: ${
+         !state.footerIsOpen && state.isDark
+           ? 'black'
+           : state.footerIsOpen && !state.isDark
+           ? 'black'
+           : 'white'
+       }`"
     >
       <Wave :colors="state.waveColors" />
     </div>
 
     <div
       class="open-footer"
-      @click="state.footerIsOpen = !state.footerIsOpen"
+      @click="(state.footerIsOpen = !state.footerIsOpen), reloadGraph()"
       :class="{ open: state.footerIsOpen }"
+      :style="`
+        --bg: ${state.isDark ? 'black' : 'white'}`"
     >
       <i class="fa-solid fa-diagram-project"></i>
       <span>{{ !state.footerIsOpen ? "Open" : "Close" }} Graph</span>
@@ -628,6 +655,8 @@ onMounted(() => {
     <footer
       class="footer"
       :class="{ open: state.footerIsOpen }"
+      :style="`
+        --bg: ${state.isDark ? 'black' : 'white'}`"
       id="map"
       ref="map"
     ></footer>
@@ -650,9 +679,18 @@ onMounted(() => {
     :class="{
       fixed: state.aside || state.footerIsOpen,
     }"
-    :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
-      state.isDark ? 'white' : 'black'
-    }; --bg: ${!state.footerIsOpen && state.isDark ? 'black' : 'white'};`"
+    :style="`
+      --start: ${start}; 
+      --stop: ${stop}; 
+      --text-color: ${state.isDark ? 'white' : 'black'}; 
+      --bg: ${
+        !state.footerIsOpen && state.isDark
+          ? 'black'
+          : state.footerIsOpen && !state.isDark
+          ? 'black'
+          : 'white'
+      };
+    `"
   >
     <main class="main content">
       <!-- main router view -->
@@ -728,16 +766,6 @@ body {
   color: var(--text-color);
   cursor: pointer;
 }
-
-.dark {
-  .darken {
-    filter: brightness(1) invert(1);
-  }
-}
-.darken {
-  filter: brightness(0.3);
-}
-
 // container top zindex
 .container {
   position: fixed;
@@ -848,11 +876,13 @@ body {
       position: fixed;
       top: 100vh;
       left: 0;
+      width: 100%;
+      height: 79vh;
+      padding-right: 4vh;
+      will-change: top;
       transition: 2s top;
       &.open {
         top: 21vh;
-        width: 100%;
-        height: 79vh;
       }
     }
   }
@@ -870,6 +900,7 @@ body {
     color: var(--text-color);
     font-size: 2em;
     cursor: pointer;
+    will-change: bottom;
     transition: 2s bottom;
     &.open {
       bottom: calc(79vh - 1px);
@@ -902,6 +933,7 @@ body {
     width: 100%;
     font-size: 0.6em;
   }
+  will-change: left;
   transition: left 1s;
   &.move {
     left: 30%;
@@ -947,14 +979,14 @@ body {
   grid-template-columns: 5% 80% 15%;
   grid-template-rows: 15% auto;
   height: 120vh;
+
+  background-color: var(--bg);
+  color: var(--text-color);
+  will-change: background-color;
   transition: all 2s;
   @media screen and (min-width: $sm) {
     margin-bottom: 100vh;
   }
-
-  background-color: var(--bg);
-  color: var(--text-color);
-
   &.fixed {
     position: fixed;
   }
