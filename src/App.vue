@@ -1,6 +1,6 @@
 <script setup>
 //Vue
-import { reactive, computed, onMounted, ref } from "vue";
+import { reactive, computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
@@ -21,113 +21,43 @@ const state = reactive({
   aside: false,
   isDark: false,
   graph: {},
+  colorsWave: [],
+  now: {},
+  waveColors: {},
 });
-
-// Setup Colors for wave and fonts
-const colorsWave = [
-  {
-    startColor: new ColorPalettesRange.Hsl({
-      hue: 180,
-      saturation: 59,
-      brightness: 55,
-    }),
-    endColor: new ColorPalettesRange.Hsl({
-      hue: 208,
-      saturation: 45,
-      brightness: 75,
-    }),
-  },
-  {
-    startColor: new ColorPalettesRange.Hsl({
-      hue: 180,
-      saturation: 79,
-      brightness: 55,
-    }),
-    endColor: new ColorPalettesRange.Hsl({
-      hue: 208,
-      saturation: 65,
-      brightness: 65,
-    }),
-  },
-  {
-    startColor: new ColorPalettesRange.Hsl({
-      hue: 355,
-      saturation: 97,
-      brightness: 56,
-    }),
-    endColor: new ColorPalettesRange.Hsl({
-      hue: 32,
-      saturation: 76,
-      brightness: 60,
-    }),
-  },
-  {
-    startColor: new ColorPalettesRange.Hsl({
-      hue: 21,
-      saturation: 46,
-      brightness: 48,
-    }),
-    endColor: new ColorPalettesRange.Hsl({
-      hue: 174,
-      saturation: 25,
-      brightness: 52,
-    }),
-  },
-  {
-    startColor: new ColorPalettesRange.Hsl({
-      hue: 150,
-      saturation: 25,
-      brightness: 52,
-    }),
-    endColor: new ColorPalettesRange.Hsl({
-      hue: 250,
-      saturation: 25,
-      brightness: 52,
-    }),
-  },
-];
-
-//colors depending on the time
-const now = DateTime.now().setZone("Europe/Rome").hour;
-const whatColor = Math.floor(now / 5);
-
-//Set palettes
-const palette = ColorPalettesRange.SetColorPalette(
-  colorsWave[whatColor].startColor
-);
-const gradientWave1 = palette.gradient({
-  numColors: 10,
-  endColor: colorsWave[whatColor].endColor,
-});
-
-const waveColors = {
-  wave1: [],
-  wave2: [],
-};
-waveColors.wave1 = gradientWave1.map((element) => {
-  return element.printHex();
-});
-waveColors.wave2 = gradientWave1.reverse().map((element) => {
-  return element.printHex();
-});
+//ref DOM map
+const map = ref(null);
 
 // computed
-const start = computed(() => {
-  return colorsWave[whatColor].startColor.printHex();
-});
-const stop = computed(() => {
-  return colorsWave[whatColor].endColor.printHex();
+const whatColor = computed(() => {
+  return state.now ? Math.floor(state.now / 5) : 0;
 });
 
-//Setup Colors Map
+const start = computed(() => {
+  if (state.colorsWave.length) {
+    return state.colorsWave[whatColor.value].startColor.printHex();
+  }
+  return "";
+});
+
+const stop = computed(() => {
+  if (state.colorsWave.length) {
+    return state.colorsWave[whatColor.value].endColor.printHex();
+  }
+  return "";
+});
+
 const label = computed(() => {
-  const baseColor = colorsWave[whatColor].endColor;
-  baseColor.setBrightness(60);
-  const palette = ColorPalettesRange.SetColorPalette(
-    colorsWave[whatColor].endColor
-  );
-  const [, color] = palette.triad();
-  return color.printHex();
+  if (state.colorsWave.length) {
+    const baseColor = state.colorsWave[whatColor.value].endColor;
+    baseColor.setBrightness(60);
+    const palette = ColorPalettesRange.SetColorPalette(
+      state.colorsWave[whatColor.value].endColor
+    );
+    const [, color] = palette.triad();
+    return color.printHex();
+  }
+  return "";
 });
 
 const labelSecondary = computed(() => {
@@ -135,241 +65,265 @@ const labelSecondary = computed(() => {
 });
 
 const lineMap = computed(() => {
-  const baseColor = colorsWave[whatColor].endColor;
+  const baseColor = state.colorsWave[whatColor.value].endColor;
   baseColor.setBrightness(90);
   return baseColor.printHex();
 });
 
 //Elements map
-const elements = [
-  {
-    data: {
-      id: "1",
-      label: "Articles",
-      name: "all",
-      tag: "articles",
-      size: 3,
-      aside: true,
-      color: label.value,
+const elements = computed(() => {
+  return [
+    {
+      data: {
+        id: "1",
+        label: "Articles",
+        name: "all",
+        tag: "articles",
+        size: 3,
+        aside: true,
+        color: label.value,
+      },
+      renderedPosition: {
+        x: -10000,
+        y: -2000,
+      },
     },
-    renderedPosition: {
-      x: -10000,
-      y: -2000,
-    },
-  },
 
-  {
-    data: {
-      id: "2",
-      label: "Projects",
-      name: "project",
-      tag: "project",
-      size: 3,
-      aside: false,
-      color: label.value,
+    {
+      data: {
+        id: "2",
+        label: "Projects",
+        name: "project",
+        tag: "project",
+        size: 3,
+        aside: false,
+        color: label.value,
+      },
+      renderedPosition: {
+        x: 10000,
+        y: 500,
+      },
     },
-    renderedPosition: {
-      x: 10000,
-      y: 500,
+    {
+      data: {
+        id: "3",
+        label: "Javascript",
+        name: "javascript",
+        tag: "articles",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "3",
-      label: "Javascript",
-      name: "javascript",
-      tag: "articles",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "4",
+        label: "Ergonomics",
+        name: "ergonomics",
+        tag: "articles",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "4",
-      label: "Ergonomics",
-      name: "ergonomics",
-      tag: "articles",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "5",
+        label: "Vuejs",
+        name: "vuejs",
+        tag: "articles",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "5",
-      label: "Vuejs",
-      name: "vuejs",
-      tag: "articles",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "6",
+        label: "Teaching",
+        name: "teaching",
+        size: 3,
+        aside: false,
+        color: label.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "6",
-      label: "Teaching",
-      name: "teaching",
-      size: 3,
-      aside: false,
-      color: label.value,
+    {
+      data: {
+        id: "7",
+        label: "HTML",
+        name: "html",
+        size: 2,
+        aside: false,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "7",
-      label: "HTML",
-      name: "html",
-      size: 2,
-      aside: false,
-      color: labelSecondary.value,
-    },
-  },
 
-  {
-    data: {
-      id: "8",
-      label: "Laravel",
-      name: "laravel",
-      size: 2,
-      aside: false,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "8",
+        label: "Laravel",
+        name: "laravel",
+        size: 2,
+        aside: false,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "9",
-      label: "Color Palettes Range NPM",
-      name: "colorPalettesRangeNpm",
-      tag: "project",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "9",
+        label: "Color Palettes Range NPM",
+        name: "colorPalettesRangeNpm",
+        tag: "project",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "10",
-      label: "Vue Gantt",
-      name: "vueGantt",
-      tag: "project",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "10",
+        label: "Vue Gantt",
+        name: "vueGantt",
+        tag: "project",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "12",
-      label: "SASS",
-      name: "sass",
-      size: 2,
-      aside: false,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "12",
+        label: "SASS",
+        name: "sass",
+        size: 2,
+        aside: false,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      id: "13",
-      label: "Color Palettes Range App",
-      name: "colorPalettesRangeApp",
-      tag: "project",
-      size: 2,
-      aside: true,
-      color: labelSecondary.value,
+    {
+      data: {
+        id: "13",
+        label: "Color Palettes Range App",
+        name: "colorPalettesRangeApp",
+        tag: "project",
+        size: 2,
+        aside: true,
+        color: labelSecondary.value,
+      },
     },
-  },
-  {
-    data: {
-      source: "3",
-      target: "1",
+    {
+      data: {
+        source: "3",
+        target: "1",
+      },
     },
-  },
-  {
-    data: {
-      source: "1",
-      target: "4",
+    {
+      data: {
+        source: "1",
+        target: "4",
+      },
     },
-  },
 
-  {
-    data: {
-      source: "1",
-      target: "5",
+    {
+      data: {
+        source: "1",
+        target: "5",
+      },
     },
-  },
-  {
-    data: {
-      source: "1",
-      target: "4",
+    {
+      data: {
+        source: "1",
+        target: "4",
+      },
     },
-  },
-  {
-    data: {
-      source: "2",
-      target: "5",
+    {
+      data: {
+        source: "2",
+        target: "5",
+      },
     },
-  },
-  {
-    data: {
-      source: "2",
-      target: "12",
+    {
+      data: {
+        source: "2",
+        target: "12",
+      },
     },
-  },
-  {
-    data: {
-      source: "2",
-      target: "9",
+    {
+      data: {
+        source: "2",
+        target: "9",
+      },
     },
-  },
-  {
-    data: {
-      source: "2",
-      target: "10",
+    {
+      data: {
+        source: "2",
+        target: "10",
+      },
     },
-  },
 
-  {
-    data: {
-      source: "6",
-      target: "3",
+    {
+      data: {
+        source: "6",
+        target: "3",
+      },
     },
-  },
-  {
-    data: {
-      source: "6",
-      target: "7",
+    {
+      data: {
+        source: "6",
+        target: "7",
+      },
     },
-  },
-  {
-    data: {
-      source: "6",
-      target: "12",
+    {
+      data: {
+        source: "6",
+        target: "12",
+      },
     },
-  },
-  {
-    data: {
-      source: "6",
-      target: "8",
+    {
+      data: {
+        source: "6",
+        target: "8",
+      },
     },
-  },
-  {
-    data: {
-      source: "6",
-      target: "5",
+    {
+      data: {
+        source: "6",
+        target: "5",
+      },
     },
-  },
-  {
-    data: {
-      source: "2",
-      target: "13",
+    {
+      data: {
+        source: "2",
+        target: "13",
+      },
     },
-  },
-];
+  ];
+});
 
-//setup map
-const map = ref(null);
+// methods
+function initColors() {
+  //Set palettes
+  const palette = ColorPalettesRange.SetColorPalette(
+    state.colorsWave[whatColor.value].startColor
+  );
+  const gradientWave1 = palette.gradient({
+    numColors: 10,
+    endColor: state.colorsWave[whatColor.value].endColor,
+  });
+
+  const waveColors = {
+    wave1: [],
+    wave2: [],
+  };
+
+  waveColors.wave1 = gradientWave1.map((element) => {
+    return element.printHex();
+  });
+  waveColors.wave2 = gradientWave1.reverse().map((element) => {
+    return element.printHex();
+  });
+  state.waveColors = waveColors;
+}
 
 function initGraph() {
   return cytoscape({
@@ -419,7 +373,7 @@ function initGraph() {
         },
       },
     ],
-    elements,
+    elements: elements.value,
   })
     .on("mouseover", "node", function (event) {
       const node = event.target;
@@ -485,7 +439,7 @@ function initGraph() {
     });
 }
 
-function reloadMap() {
+function reloadGraph() {
   console.log(labelSecondary.value);
   state.graph
     .nodes()
@@ -498,7 +452,6 @@ function reloadMap() {
   state.graph = initGraph();
 }
 
-//aside
 function closeAside() {
   router.push({
     name: "home",
@@ -506,7 +459,94 @@ function closeAside() {
   state.aside = false;
 }
 
+//watchers
+watch(
+  () => whatColor.value, //if change reload colors and graph
+  () => {
+    initColors();
+    state.graph = initGraph();
+  }
+);
+
+// Lifecycle Hooks
 onMounted(() => {
+  //set time
+  state.now = DateTime.now().setZone("Europe/Rome").hour;
+
+  //check time interval
+  setInterval(() => {
+    state.now = DateTime.now().setZone("Europe/Rome").hour;
+  }, 30000);
+
+  // Setup Colors for wave and fonts
+  state.colorsWave = [
+    {
+      startColor: new ColorPalettesRange.Hsl({
+        hue: 180,
+        saturation: 59,
+        brightness: 55,
+      }),
+      endColor: new ColorPalettesRange.Hsl({
+        hue: 208,
+        saturation: 45,
+        brightness: 75,
+      }),
+    },
+    {
+      startColor: new ColorPalettesRange.Hsl({
+        hue: 180,
+        saturation: 79,
+        brightness: 55,
+      }),
+      endColor: new ColorPalettesRange.Hsl({
+        hue: 208,
+        saturation: 65,
+        brightness: 65,
+      }),
+    },
+    {
+      startColor: new ColorPalettesRange.Hsl({
+        hue: 355,
+        saturation: 97,
+        brightness: 56,
+      }),
+      endColor: new ColorPalettesRange.Hsl({
+        hue: 32,
+        saturation: 76,
+        brightness: 60,
+      }),
+    },
+    {
+      startColor: new ColorPalettesRange.Hsl({
+        hue: 21,
+        saturation: 46,
+        brightness: 48,
+      }),
+      endColor: new ColorPalettesRange.Hsl({
+        hue: 174,
+        saturation: 25,
+        brightness: 52,
+      }),
+    },
+    {
+      startColor: new ColorPalettesRange.Hsl({
+        hue: 150,
+        saturation: 25,
+        brightness: 52,
+      }),
+      endColor: new ColorPalettesRange.Hsl({
+        hue: 250,
+        saturation: 25,
+        brightness: 52,
+      }),
+    },
+  ];
+
+  //setup colors
+  state.whatColor = Math.floor(state.now / 5);
+  initColors();
+
+  //start graph
   setTimeout(() => {
     state.graph = initGraph();
   }, 300);
@@ -517,7 +557,7 @@ onMounted(() => {
   <!-- ico dark mode -->
   <div
     class="dark-mode"
-    @click="(state.isDark = !state.isDark), reloadMap()"
+    @click="(state.isDark = !state.isDark), reloadGraph()"
     :style="`--text-color: ${state.isDark ? 'white' : 'black'}; `"
   >
     <i class="fa-solid fa-lightbulb" v-show="!state.isDark"></i>
@@ -536,8 +576,8 @@ onMounted(() => {
   >
     <Header class="header" />
 
-    <div class="wave">
-      <Wave :colors="waveColors" />
+    <div class="wave" v-if="state.waveColors?.wave1">
+      <Wave :colors="state.waveColors" />
     </div>
 
     <footer class="footer" id="map" ref="map"></footer>
@@ -571,10 +611,11 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
-// variables
+// Mediaquery
 $xs: 798px;
 $sm: 1200px;
 
+//Custom Properties
 :root {
   --start: "";
   --stop: "";
@@ -583,6 +624,7 @@ $sm: 1200px;
   --text-color: white;
 }
 
+//Mixins
 @mixin radial {
   text-align: right;
   animation: alternate;
@@ -596,6 +638,7 @@ $sm: 1200px;
   -webkit-text-fill-color: transparent;
 }
 
+//Commons
 * {
   margin: 0;
   padding: 0;
@@ -634,6 +677,7 @@ body {
   color: var(--text-color);
   cursor: pointer;
 }
+
 // container top zindex
 .container {
   position: fixed;
