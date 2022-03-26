@@ -13,5 +13,8 @@ export default defineConfig({
   },
   devServer: {
         proxy: 'http://localhost:3000/',
-    }
+  },
+  server: {
+    host: true
+  }
 });

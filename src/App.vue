@@ -20,6 +20,7 @@ const router = useRouter();
 const state = reactive({
   aside: false,
   isDark: false,
+  footerIsOpen: true,
   graph: {},
   colorsWave: [],
   now: {},
@@ -345,6 +346,8 @@ function initGraph() {
       avoidOverlap: true,
       handleDisconnected: true,
       convergenceThreshold: 0.01,
+      flow:
+        window.innerWidth < 1024 ? { axis: "x", minSeparation: 30 } : undefined,
       nodeSpacing: function (node) {
         return 18;
       },
@@ -440,7 +443,6 @@ function initGraph() {
 }
 
 function reloadGraph() {
-  console.log(labelSecondary.value);
   state.graph
     .nodes()
     .forEach((element) =>
@@ -464,7 +466,7 @@ watch(
   () => whatColor.value, //if change reload colors and graph
   () => {
     initColors();
-    state.graph = initGraph();
+    state.graph = state.footerIsOpen ?? initGraph();
   }
 );
 
@@ -567,12 +569,17 @@ onMounted(() => {
   initColors();
 
   //start graph
-  setTimeout(() => {
-    state.graph = initGraph();
-  }, 300);
+  if (state.footerIsOpen) {
+    setTimeout(() => {
+      state.graph = initGraph();
+    }, 300);
+  }
 
   //resize graph
   window.addEventListener("resize", () => {
+    if (state.graph) {
+      state.graph.destroy();
+    }
     state.graph = initGraph();
   });
 });
@@ -593,19 +600,37 @@ onMounted(() => {
   <!-- container top -->
   <div
     class="container"
+    :class="{ dark: state.isDark }"
     :style="`
     --start: ${start}; --stop: ${stop}; 
     --text-color: ${state.isDark ? 'white' : 'black'}; 
     --bg: ${state.isDark ? 'black' : 'white'};  
     --bg-aside: ${state.isDark ? '#212121' : 'black'};`"
   >
-    <Header class="header" />
+    <Header class="header" :class="{ darken: state.footerIsOpen }" />
 
-    <div class="wave" v-if="state.waveColors?.wave1">
+    <div
+      class="wave"
+      v-if="state.waveColors?.wave1"
+      :class="{ darken: state.footerIsOpen }"
+    >
       <Wave :colors="state.waveColors" />
     </div>
 
-    <footer class="footer" id="map" ref="map"></footer>
+    <div
+      class="open-footer"
+      @click="state.footerIsOpen = !state.footerIsOpen"
+      :class="{ open: state.footerIsOpen }"
+    >
+      <i class="fa-solid fa-diagram-project"></i>
+      <span>{{ !state.footerIsOpen ? "Open" : "Close" }} Graph</span>
+    </div>
+    <footer
+      class="footer"
+      :class="{ open: state.footerIsOpen }"
+      id="map"
+      ref="map"
+    ></footer>
 
     <aside :class="{ move: state.aside }" class="aside">
       <a class="close" @click.prevent="closeAside">
@@ -622,10 +647,12 @@ onMounted(() => {
   <!-- container bottom -->
   <div
     class="container-bottom"
-    :class="{ fixed: state.aside, dark: state.isDark }"
+    :class="{
+      fixed: state.aside || state.footerIsOpen,
+    }"
     :style="`--start: ${start}; --stop: ${stop}; --text-color: ${
       state.isDark ? 'white' : 'black'
-    }; --bg: ${state.isDark ? 'black' : 'white'};`"
+    }; --bg: ${!state.footerIsOpen && state.isDark ? 'black' : 'white'};`"
   >
     <main class="main content">
       <!-- main router view -->
@@ -694,12 +721,21 @@ body {
 
 .dark-mode {
   position: fixed;
-  top: 0.5em;
-  left: 0.5em;
+  top: 0.8vw;
+  left: 0.8vh;
   z-index: 10;
   font-size: 1.7em;
   color: var(--text-color);
   cursor: pointer;
+}
+
+.dark {
+  .darken {
+    filter: brightness(1) invert(1);
+  }
+}
+.darken {
+  filter: brightness(0.3);
 }
 
 // container top zindex
@@ -711,14 +747,15 @@ body {
   grid-template-rows: 15% 30% 8% 47%;
   height: 100vh;
   width: 100%;
-  @media screen and (max-width: 678px) {
-    grid-template-rows: 15% 30% 8% 47%;
+  @media screen and (max-width: $sm) {
+    grid-template-rows: 15% 30%;
   }
 
   .wave,
   .header,
   .footer {
     background-color: var(--bg);
+    transition: all 2s;
   }
 
   .header {
@@ -802,9 +839,51 @@ body {
   .footer {
     display: grid;
     z-index: 0;
+    grid-template-columns: 30% 70%;
     grid-column: 2 / 3;
     grid-row: 4;
-    grid-template-columns: 30% 70%;
+
+    @media screen and (max-width: $sm) {
+      display: block;
+      position: fixed;
+      top: 100vh;
+      left: 0;
+      transition: 2s top;
+      &.open {
+        top: 21vh;
+        width: 100%;
+        height: 79vh;
+      }
+    }
+  }
+  .open-footer {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 20vw;
+    padding: 0.2em;
+    background-color: var(--bg);
+    border-radius: 0.2em 0.2em 0 0;
+    color: var(--text-color);
+    font-size: 2em;
+    cursor: pointer;
+    transition: 2s bottom;
+    &.open {
+      bottom: calc(79vh - 1px);
+    }
+    span {
+      @include radial();
+      font-size: 0.7em;
+    }
+    @media screen and (max-width: $sm) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+    }
   }
 }
 
@@ -862,13 +941,16 @@ body {
 
 // Container bottom zindex text content
 .container-bottom {
+  position: relative;
+  z-index: 0;
   display: grid;
   grid-template-columns: 5% 80% 15%;
   grid-template-rows: 15% auto;
-  z-index: 0;
-  position: relative;
   height: 120vh;
-  margin-bottom: 20%;
+  transition: all 2s;
+  @media screen and (min-width: $sm) {
+    margin-bottom: 100vh;
+  }
 
   background-color: var(--bg);
   color: var(--text-color);
