@@ -101,8 +101,8 @@ const elements = computed(() => {
         color: label.value,
       },
       renderedPosition: {
-        x: -1000,
-        y: window.innerHeight > 1200 ? 500 : 10000,
+        x: window.innerHeight > 1200 ? 0 : 20000,
+        y: window.innerHeight > 1200 ? 0 : 10000,
       },
     },
     {
@@ -788,7 +788,8 @@ body {
   height: 100%;
   width: 100%;
   @media screen and (max-width: $sm) {
-    grid-template-rows: 15% 30%;
+    grid-template-columns: 8% 80% 15%;
+    grid-template-rows: 20% 30%;
   }
 
   .wave,
@@ -995,8 +996,9 @@ body {
   will-change: background-color;
   transition: all 2s;
   @media screen and (max-width: $sm) {
-    font-size: 1.5em;
+    grid-template-columns: 8% 80% 15%;
     grid-template-rows: 5% auto;
+    font-size: 1.5em;
   }
   @media screen and (min-width: $sm) {
     margin-bottom: 100vh;
