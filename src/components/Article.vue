@@ -1,3 +1,7 @@
+<script setup>
+defineProps(["title", "thumb", "link", "content"]);
+</script>
+
 <template>
   <article>
     <a :href="link" target="_blank"
@@ -11,10 +15,6 @@
     </div>
   </article>
 </template>
-
-<script setup>
-defineProps(["title", "thumb", "link", "content"]);
-</script>
 
 <style lang="scss" scoped>
 @import "../assets/partials/variables";

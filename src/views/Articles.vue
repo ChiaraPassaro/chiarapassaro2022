@@ -1,35 +1,9 @@
-<template>
-  <div class="content">
-    <h2 class="content__title">
-      {{ type.slice(0, 1).toUpperCase() + type.slice(1, type.length) }} Articles
-      on <a href="https://medium.com/@chiarapassaro">Medium</a>
-    </h2>
-    <!-- list articles -->
-    <div class="articles__wrapper" v-if="!state.isLoading">
-      <Article
-        v-for="(article, index) in state.articles"
-        :title="article.title"
-        :link="article.link"
-        :thumb="article.thumbnail"
-        :key="index"
-        :content="filter(article.content)"
-      />
-    </div>
-
-    <!-- loading -->
-    <div class="loading" v-else>
-      <Loading :color="color" />
-    </div>
-    <!-- /loading -->
-  </div>
-</template>
-
 <script setup>
 import Article from "../components/Article.vue";
 import axios from "axios";
 import { reactive, watch, ref } from "vue";
 import { useRoute } from "vue-router";
-import Loading from "../components/Loading.vue";
+import Loading from "../components/icons/Loading.vue";
 
 const route = useRoute();
 const state = reactive({ articles: [], isLoading: false });
@@ -47,6 +21,8 @@ async function fetchArticle(newType) {
   try {
     const res = await axios.get(RSSConverter);
     if (newType == "all") {
+      state.isLoading = false;
+
       return (state.articles = res.data.items);
     }
 
@@ -76,6 +52,32 @@ function filter(content) {
   );
 }
 </script>
+
+<template>
+  <div class="content">
+    <h2 class="content__title">
+      {{ type.slice(0, 1).toUpperCase() + type.slice(1, type.length) }} Articles
+      on <a href="https://medium.com/@chiarapassaro">Medium</a>
+    </h2>
+    <!-- list articles -->
+    <div class="articles__wrapper" v-if="!state.isLoading">
+      <Article
+        v-for="(article, index) in state.articles"
+        :title="article.title"
+        :link="article.link"
+        :thumb="article.thumbnail"
+        :key="index"
+        :content="filter(article.content)"
+      />
+    </div>
+
+    <!-- loading -->
+    <div class="loading" v-else>
+      <Loading :color="color" />
+    </div>
+    <!-- /loading -->
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .content {

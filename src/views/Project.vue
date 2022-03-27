@@ -1,23 +1,8 @@
-<template>
-  <div class="content">
-    <div class="project__content" v-if="!state.isLoading">
-      <h2>
-        <div v-html="markdown"></div>
-      </h2>
-    </div>
-    <!-- loading -->
-    <div class="loading" v-else>
-      <Loading :color="color" />
-    </div>
-    <!-- /loading -->
-  </div>
-</template>
-
 <script setup>
 // vue
 import { onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
-import Loading from "../components/Loading.vue";
+import Loading from "../components/icons/Loading.vue";
 
 import axios from "axios";
 
@@ -53,6 +38,21 @@ onMounted(() => {
     });
 });
 </script>
+
+<template>
+  <div class="content">
+    <div class="project__content" v-if="!state.isLoading">
+      <h2>
+        <div v-html="markdown"></div>
+      </h2>
+    </div>
+    <!-- loading -->
+    <div class="loading" v-else>
+      <Loading :color="color" />
+    </div>
+    <!-- /loading -->
+  </div>
+</template>
 
 <style lang="scss">
 @import "highlight.js/scss/github-dark-dimmed.scss";

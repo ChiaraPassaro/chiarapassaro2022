@@ -1,13 +1,12 @@
 <script setup>
-//TODO loading
-
 //Vue
 import { reactive, computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
-import Night from "./components/Night.vue";
-import Graph from "./components/Graph.vue";
+import Night from "./components/icons/Night.vue";
+import Graph from "./components/icons/Graph.vue";
+import Loading from "./components/icons/Loading.vue";
 
 // colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
@@ -18,6 +17,7 @@ import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
 cytoscape.use(cola);
 
+//router
 const router = useRouter();
 
 //State
@@ -25,11 +25,11 @@ const state = reactive({
   aside: false,
   isDark: false,
   footerIsOpen: false,
-  isLoading: false,
   graph: {},
   baseColorsWave: [],
   now: {},
   waveColorsHex: {},
+  isLoading: false,
 });
 
 //ref DOM map
@@ -486,6 +486,7 @@ watch(
 // Lifecycle Hooks
 onMounted(() => {
   //dark mode with prefers-color-scheme
+  state.isLoading = true;
 
   state.isDark =
     window.matchMedia &&
@@ -578,6 +579,8 @@ onMounted(() => {
   state.whatColor = Math.floor(state.now / 5);
   initColors();
 
+  state.isLoading = false;
+
   //start graph
   if (state.footerIsOpen) {
     setTimeout(() => {
@@ -599,6 +602,7 @@ onMounted(() => {
 <template>
   <!-- container  -->
   <div
+    v-if="!state.isLoading"
     class="container"
     :class="{ dark: state.isDark }"
     :style="`
@@ -617,7 +621,13 @@ onMounted(() => {
     <Header class="header" />
 
     <!-- main router view -->
-    <main class="main content">
+    <main
+      class="main content"
+      :style="`
+      --start: ${start};
+      --stop: ${stop};
+      `"
+    >
       <RouterView />
     </main>
     <!-- /main router view -->
@@ -683,6 +693,14 @@ onMounted(() => {
     <!-- /ico dark mode -->
   </div>
   <!-- /container -->
+  <div v-else class="loading-main">
+    <Loading
+      :color="{
+        start: 'black',
+        stop: 'white',
+      }"
+    />
+  </div>
 </template>
 
 <style lang="scss">
@@ -721,6 +739,7 @@ onMounted(() => {
 a:hover {
   filter: invert(0.8);
 }
+
 html {
   font-size: 100%;
   height: -webkit-fill-available;
@@ -745,6 +764,12 @@ body {
 
 #app {
   overflow: hidden;
+}
+
+.loading-main {
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 .dark-mode {
@@ -886,8 +911,9 @@ body {
       }
 
       font-weight: 400;
-      font-size: 1.8em;
+      font-size: 1.8rem;
     }
+    font-size: 1.3em;
   }
   .footer {
     display: grid;
