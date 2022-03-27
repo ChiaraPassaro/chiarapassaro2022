@@ -1,9 +1,12 @@
 <script setup>
+//TODO loading
+
 //Vue
 import { reactive, computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
+import Night from "./components/Night.vue";
 
 // colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
@@ -21,11 +24,13 @@ const state = reactive({
   aside: false,
   isDark: false,
   footerIsOpen: false,
+  isLoading: false,
   graph: {},
-  colorsWave: [],
+  baseColorsWave: [],
   now: {},
-  waveColors: {},
+  waveColorsHex: {},
 });
+
 //ref DOM map
 const map = ref(null);
 
@@ -35,25 +40,25 @@ const whatColor = computed(() => {
 });
 
 const start = computed(() => {
-  if (state.colorsWave.length) {
-    return state.colorsWave[whatColor.value].startColor.printHex();
+  if (state.baseColorsWave.length) {
+    return state.baseColorsWave[whatColor.value].startColor.printHex();
   }
   return "";
 });
 
 const stop = computed(() => {
-  if (state.colorsWave.length) {
-    return state.colorsWave[whatColor.value].endColor.printHex();
+  if (state.baseColorsWave.length) {
+    return state.baseColorsWave[whatColor.value].endColor.printHex();
   }
   return "";
 });
 
 const label = computed(() => {
-  if (state.colorsWave.length) {
-    const baseColor = state.colorsWave[whatColor.value].endColor;
+  if (state.baseColorsWave.length) {
+    const baseColor = state.baseColorsWave[whatColor.value].endColor;
     baseColor.setBrightness(60);
     const palette = ColorPalettesRange.SetColorPalette(
-      state.colorsWave[whatColor.value].endColor
+      state.baseColorsWave[whatColor.value].endColor
     );
     const [, color] = palette.triad();
     return color.printHex();
@@ -66,7 +71,7 @@ const labelSecondary = computed(() => {
 });
 
 const lineMap = computed(() => {
-  const baseColor = state.colorsWave[whatColor.value].endColor;
+  const baseColor = state.baseColorsWave[whatColor.value].endColor;
   baseColor.setBrightness(90);
   return baseColor.printHex();
 });
@@ -301,29 +306,36 @@ const elements = computed(() => {
   ];
 });
 
+const nightColors = computed(() => {
+  return (!state.footerIsOpen && state.isDark) ||
+    (!state.isDark && state.footerIsOpen)
+    ? false
+    : state.waveColorsHex.wave1;
+});
+
 // methods
 function initColors() {
   //Set palettes
   const palette = ColorPalettesRange.SetColorPalette(
-    state.colorsWave[whatColor.value].startColor
+    state.baseColorsWave[whatColor.value].startColor
   );
   const gradientWave1 = palette.gradient({
     numColors: 10,
-    endColor: state.colorsWave[whatColor.value].endColor,
+    endColor: state.baseColorsWave[whatColor.value].endColor,
   });
 
-  const waveColors = {
+  const waveColorsHex = {
     wave1: [],
     wave2: [],
   };
 
-  waveColors.wave1 = gradientWave1.map((element) => {
+  waveColorsHex.wave1 = gradientWave1.map((element) => {
     return element.printHex();
   });
-  waveColors.wave2 = gradientWave1.reverse().map((element) => {
+  waveColorsHex.wave2 = gradientWave1.reverse().map((element) => {
     return element.printHex();
   });
-  state.waveColors = waveColors;
+  state.waveColorsHex = waveColorsHex;
 }
 
 function initGraph() {
@@ -498,7 +510,7 @@ onMounted(() => {
   }, 30000);
 
   // Setup Colors for wave and fonts
-  state.colorsWave = [
+  state.baseColorsWave = [
     {
       startColor: new ColorPalettesRange.Hsl({
         hue: 180,
@@ -584,7 +596,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- container top -->
+  <!-- container  -->
   <div
     class="container"
     :class="{ dark: state.isDark }"
@@ -602,15 +614,18 @@ onMounted(() => {
     `"
   >
     <Header class="header" />
+
+    <!-- main router view -->
     <main class="main content">
-      <!-- main router view -->
       <RouterView />
     </main>
+    <!-- /main router view -->
 
-    <div class="wave" v-if="state.waveColors?.wave1">
-      <Wave :colors="state.waveColors" />
+    <div class="wave" v-if="state.waveColorsHex?.wave1">
+      <Wave :colors="state.waveColorsHex" />
     </div>
 
+    <!-- graph -->
     <div
       class="open-footer"
       @click="(state.footerIsOpen = !state.footerIsOpen), reloadGraph()"
@@ -640,38 +655,34 @@ onMounted(() => {
       id="map"
       ref="map"
     ></footer>
+    <!-- /graph -->
 
+    <!-- aside -->
     <aside :class="{ move: state.aside }" class="aside">
       <a class="close" @click.prevent="closeAside">
         <i class="fa-solid fa-arrow-right"></i> <span>Close</span>
       </a>
       <div class="aside__content">
         <!-- aside router view -->
-        <RouterView name="aside" />
+        <RouterView name="aside" :color="{ start, stop }" />
       </div>
     </aside>
+    <!-- /aside -->
+
     <!-- ico dark mode -->
     <div
       class="dark-mode"
       @click="(state.isDark = !state.isDark), reloadGraph()"
-      :style="`--text-color: ${
-        (!state.footerIsOpen && state.isDark) ||
-        (!state.isDark && state.footerIsOpen)
-          ? 'white'
-          : 'black'
-      }; `"
     >
-      <i class="fa-solid fa-lightbulb"></i>
+      <Night class="dark-mode__ico" :colors="nightColors" />
     </div>
     <!-- /ico dark mode -->
   </div>
-  <!-- /container top -->
+  <!-- /container -->
 </template>
 
 <style lang="scss">
-// Mediaquery
-$xs: 798px;
-$sm: 1200px;
+@import "./assets/partials/variables";
 
 //Custom Properties
 :root {
@@ -734,12 +745,15 @@ body {
 
 .dark-mode {
   position: fixed;
-  top: 0.8%;
-  left: 0.8%;
+  top: 1%;
+  left: 1%;
   z-index: 4;
   font-size: 1.7em;
   color: var(--text-color);
   cursor: pointer;
+  &__ico {
+    width: 1em;
+  }
 }
 
 .container {
@@ -951,7 +965,9 @@ body {
       display: flex;
     }
   }
-
+  &__content {
+    height: calc(100% - 6em);
+  }
   .close {
     display: none;
     position: fixed;

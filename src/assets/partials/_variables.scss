@@ -1,7 +1,3 @@
-:root {
-  --bg-header: #fff;
-  --start: #c85b28;
-  --stop: #7a9687;
-  --gradient: radial-gradient(circle, var(--start) 0%, var(--stop) 83%);
-  --gradient-two: radial-gradient(circle, var(--start) 0%, var(--stop) 100%);
-}
+// Mediaquery
+$xs: 798px;
+$sm: 1200px;

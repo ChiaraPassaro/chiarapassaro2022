@@ -17,9 +17,8 @@ defineProps(["title", "thumb", "link", "content"]);
 </script>
 
 <style lang="scss" scoped>
-// Mediaquery
-$xs: 798px;
-$sm: 1200px;
+@import "../assets/partials/variables";
+
 article {
   display: flex;
   align-items: flex-start;
