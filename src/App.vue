@@ -7,6 +7,7 @@ import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import Night from "./components/Night.vue";
+import Graph from "./components/Graph.vue";
 
 // colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
@@ -637,14 +638,17 @@ onMounted(() => {
             ? 'white'
             : 'black'
         }; 
-        --text-color:${
+       `"
+    >
+      <Graph
+        class="ico-graph"
+        :color="
           (state.isDark && !state.footerIsOpen) ||
           (!state.isDark && state.footerIsOpen)
             ? 'black'
             : 'white'
-        }`"
-    >
-      <i class="fa-solid fa-diagram-project"></i>
+        "
+      />
       <span>{{ !state.footerIsOpen ? "Open" : "Close" }} Graph</span>
     </div>
     <footer
@@ -925,6 +929,9 @@ body {
     transition: 2s bottom;
     &.open {
       bottom: 79%;
+    }
+    .ico-graph {
+      width: 1em;
     }
     span {
       @include radial();
