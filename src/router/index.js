@@ -12,6 +12,7 @@ const router = createRouter({
       components: {
         default: HomeView,
       },
+      meta: { title: "Chiara Passaro" },
     },
     {
       path: "/articles/:type",
@@ -20,6 +21,7 @@ const router = createRouter({
         default: HomeView,
         aside: Articles,
       },
+      meta: { title: "Chiara Passar - Articles" },
     },
     {
       path: "/projects/:name",
@@ -28,6 +30,7 @@ const router = createRouter({
         default: HomeView,
         aside: Project,
       },
+      meta: { title: "Chiara Passaro - Projects" },
     },
   ],
 });

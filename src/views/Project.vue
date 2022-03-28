@@ -24,7 +24,7 @@ onMounted(() => {
   hljs.registerLanguage("javascript", jsHighlight);
   hljs.highlightAll();
   axios
-    .get(`https://${window.location.host}/md/${name.value}.md`)
+    .get(`${location.protocol}//${window.location.host}/md/${name.value}.md`)
     .then((result) => {
       let markdownResult = marked(result.data, {
         highlight: function (markdown) {
@@ -60,6 +60,7 @@ onMounted(() => {
   height: 100%;
 }
 .project__content {
+  font-size: 0.5em;
   h1,
   h2,
   h3,
@@ -67,7 +68,7 @@ onMounted(() => {
   h5 {
     margin: 1.6em 0 1em 0;
   }
-  font-size: 0.8em;
+
   pre {
     white-space: pre-wrap; /* css-3 */
     word-wrap: break-word;

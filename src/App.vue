@@ -1,7 +1,7 @@
 <script setup>
 //Vue
 import { reactive, computed, onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import Night from "./components/icons/Night.vue";
@@ -19,6 +19,7 @@ cytoscape.use(cola);
 
 //router
 const router = useRouter();
+const route = useRoute();
 
 //State
 const state = reactive({
@@ -597,6 +598,13 @@ onMounted(() => {
     state.graph = initGraph();
   });
 });
+
+watch(
+  () => route.meta.title,
+  () => {
+    document.title = route.meta.title;
+  }
+);
 </script>
 
 <template>
@@ -756,7 +764,7 @@ body {
   }
 
   @media screen and (max-width: $xs) {
-    font-size: 2vmax;
+    font-size: 1.5vmax;
   }
 
   font-size: 1vmax;
