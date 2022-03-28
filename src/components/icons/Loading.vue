@@ -66,7 +66,7 @@ defineProps(["color"]);
 <style lang="scss" scoped>
 svg {
   position: relative;
-  width: 20em;
+  width: 20%;
   animation-name: loading-anim;
   animation-duration: 1s;
   animation-iteration-count: infinite;
