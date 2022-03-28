@@ -24,7 +24,7 @@ onMounted(() => {
   hljs.registerLanguage("javascript", jsHighlight);
   hljs.highlightAll();
   axios
-    .get(`http://${window.location.host}/md/${name.value}.md`)
+    .get(`https://${window.location.host}/md/${name.value}.md`)
     .then((result) => {
       let markdownResult = marked(result.data, {
         highlight: function (markdown) {
