@@ -2,11 +2,12 @@
 import Article from "../components/Article.vue";
 import axios from "axios";
 import { reactive, watch, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/icons/Loading.vue";
 
 const route = useRoute();
-const state = reactive({ articles: [], isLoading: false });
+const router = useRouter();
+const state = reactive({ articles: [], isLoading: false, error: false });
 defineProps(["color"]);
 
 //Medium Feeds
@@ -30,17 +31,29 @@ async function fetchArticle(newType) {
       return element.categories.includes(newType);
     });
 
+    if (state.articles.length === 0) {
+      state.error = true;
+      setTimeout(() => {
+        state.error = false;
+        router.push({
+          name: "home",
+        });
+      }, 4000);
+    }
+
     state.isLoading = false;
   } catch (err) {
     // Handle Error Here
-    console.error(err);
+    router.push({
+      name: "home",
+    });
   }
 }
 
 fetchArticle(type.value);
 
 watch(
-  () => route.params.type,
+  () => route.params.aside,
   (newType) => fetchArticle(newType)
 );
 
@@ -55,12 +68,12 @@ function filter(content) {
 
 <template>
   <div class="content">
-    <h2 class="content__title">
+    <h2 class="content__title" v-if="!state.error">
       {{ type.slice(0, 1).toUpperCase() + type.slice(1, type.length) }} Articles
       on <a href="https://medium.com/@chiarapassaro">Medium</a>
     </h2>
     <!-- list articles -->
-    <div class="articles__wrapper" v-if="!state.isLoading">
+    <div class="articles__wrapper" v-if="!state.isLoading && !state.error">
       <Article
         v-for="(article, index) in state.articles"
         :title="article.title"
@@ -72,32 +85,43 @@ function filter(content) {
     </div>
 
     <!-- loading -->
-    <div class="loading" v-else>
+    <div class="loading" v-else-if="state.isLoading">
       <Loading :color="color" />
     </div>
     <!-- /loading -->
+
+    <!-- error -->
+    <div class="error" v-else-if="state.error">
+      <h2 class="content__title">
+        The category {{ route.params.type }} not exists.
+      </h2>
+      <p>You'll be redirected to the home page</p>
+    </div>
+    <!-- /error -->
   </div>
 </template>
 
-<style lang="scss" scoped>
-.content {
+<style lang="scss">
+@import "../assets/partials/variables";
+@import "../assets/partials/commons";
+
+.container .content {
   height: 100%;
+  font-size: 1em;
+  @media screen and (max-width: $sm) {
+    font-size: 0.7em;
+  }
 }
+
 h2.content__title {
   height: 4em;
   margin: 0;
   text-align: left;
 }
+
 .articles__wrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 10%;
-}
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
 }
 </style>

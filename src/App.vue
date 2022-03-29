@@ -1,12 +1,11 @@
 <script setup>
 //Vue
-import { reactive, computed, onMounted, ref, watch } from "vue";
+import { reactive, computed, onMounted, ref, watch, onUpdated } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import Night from "./components/icons/Night.vue";
 import Graph from "./components/icons/Graph.vue";
-import Loading from "./components/icons/Loading.vue";
 
 // colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
@@ -30,7 +29,6 @@ const state = reactive({
   baseColorsWave: [],
   now: {},
   waveColorsHex: {},
-  isLoading: false,
 });
 
 //ref DOM map
@@ -484,11 +482,27 @@ watch(
   }
 );
 
+watch(
+  () =>
+    (route.params.type || route.params.name) &&
+    (Object.keys(route.params).includes("type") ||
+      Object.keys(route.params).includes("name")),
+  () => {
+    let name = route.params.name || route.params.type;
+    state.aside = elements.value.find((el) => el.data.name == name);
+  }
+);
+
+watch(
+  () => route.meta.title,
+  () => {
+    document.title = route.meta.title;
+  }
+);
+
 // Lifecycle Hooks
 onMounted(() => {
   //dark mode with prefers-color-scheme
-  state.isLoading = true;
-
   state.isDark =
     window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -580,8 +594,6 @@ onMounted(() => {
   state.whatColor = Math.floor(state.now / 5);
   initColors();
 
-  state.isLoading = false;
-
   //start graph
   if (state.footerIsOpen) {
     setTimeout(() => {
@@ -599,12 +611,9 @@ onMounted(() => {
   });
 });
 
-watch(
-  () => route.meta.title,
-  () => {
-    document.title = route.meta.title;
-  }
-);
+onUpdated(() => {
+  state.aside = !!route.params.name || !!route.params.type;
+});
 </script>
 
 <template>
@@ -630,7 +639,7 @@ watch(
 
     <!-- main router view -->
     <main
-      class="main content"
+      class="main"
       :style="`
       --start: ${start};
       --stop: ${stop};
@@ -701,14 +710,6 @@ watch(
     <!-- /ico dark mode -->
   </div>
   <!-- /container -->
-  <div v-else class="loading-main">
-    <Loading
-      :color="{
-        start: 'black',
-        stop: 'white',
-      }"
-    />
-  </div>
 </template>
 
 <style lang="scss">
@@ -760,11 +761,11 @@ body {
   font-family: "Roboto", sans-serif;
 
   @media screen and (max-width: $sm) {
-    font-size: 1.3vmax;
+    font-size: 2vmax;
   }
 
   @media screen and (max-width: $xs) {
-    font-size: 1.5vmax;
+    font-size: 2.5vmax;
   }
 
   font-size: 1vmax;
@@ -772,12 +773,6 @@ body {
 
 #app {
   overflow: hidden;
-}
-
-.loading-main {
-  position: fixed;
-  width: 100%;
-  height: 100%;
 }
 
 .dark-mode {
@@ -945,6 +940,7 @@ body {
       }
     }
   }
+
   .open-footer {
     display: none;
     position: fixed;
