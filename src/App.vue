@@ -759,14 +759,18 @@ body {
   min-height: -webkit-fill-available;
 
   font-family: "Roboto", sans-serif;
-  font-size: 1.2vmax;
+  font-size: 1vmax;
+
+  @media screen and (max-width: $md) {
+    font-size: 1.4vmax;
+  }
 
   @media screen and (max-width: $sm) {
     font-size: 2vmax;
   }
 
   @media screen and (max-width: $xs) {
-    font-size: 4vmin;
+    font-size: 4.3vmin;
   }
 }
 
