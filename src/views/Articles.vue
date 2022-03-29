@@ -111,12 +111,12 @@ function filter(content) {
   @media screen and (max-width: $sm) {
     font-size: 0.7em;
   }
-}
 
-h2.content__title {
-  height: 4em;
-  margin: 0;
-  text-align: left;
+  h2.content__title {
+    height: 4em;
+    margin: 0;
+    text-align: left;
+  }
 }
 
 .articles__wrapper {

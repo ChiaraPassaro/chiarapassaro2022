@@ -759,16 +759,15 @@ body {
   min-height: -webkit-fill-available;
 
   font-family: "Roboto", sans-serif;
+  font-size: 1.2vmax;
 
   @media screen and (max-width: $sm) {
     font-size: 2vmax;
   }
 
   @media screen and (max-width: $xs) {
-    font-size: 2.5vmax;
+    font-size: 4vmin;
   }
-
-  font-size: 1vmax;
 }
 
 #app {
@@ -798,7 +797,7 @@ body {
   width: 100%;
   background-color: var(--bg);
   transition: all 2s;
-
+  font-size: 1em;
   @media screen and (max-width: $sm) {
     grid-template-columns: 8% 80% 15%;
     grid-template-rows: 15% auto;
@@ -835,7 +834,6 @@ body {
       }
 
       font-weight: 400;
-      font-size: 2.5em;
       line-height: 2em;
 
       @media screen and (max-width: $sm) {
@@ -914,9 +912,7 @@ body {
       }
 
       font-weight: 400;
-      font-size: 1.8rem;
     }
-    font-size: 1.3em;
   }
   .footer {
     display: grid;
