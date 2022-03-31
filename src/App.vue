@@ -497,6 +497,9 @@ watch(
   () => route.meta.title,
   () => {
     document.title = route.meta.title;
+    document
+      .querySelector('meta[name="description"]')
+      .setAttribute("content", route.meta.description);
   }
 );
 

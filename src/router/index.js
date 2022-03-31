@@ -12,7 +12,10 @@ const router = createRouter({
       components: {
         default: HomeView,
       },
-      meta: { title: "Chiara Passaro" },
+      meta: {
+        title: "Chiara Passaro",
+        description: "Chiara Passaro Full Stack Web Developer and Teacher",
+      }
     },
     {
       path: "/articles/:type",
@@ -21,7 +24,10 @@ const router = createRouter({
         default: HomeView,
         aside: Articles,
       },
-      meta: { title: "Chiara Passar - Articles" },
+      meta: {
+        title: "Chiara Passar - Articles",
+        description: "Chiara Passaro Full Stack Web Developer and Teacher",
+      },
     },
     {
       path: "/projects/:name",
@@ -30,8 +36,11 @@ const router = createRouter({
         default: HomeView,
         aside: Project,
       },
-      meta: { title: "Chiara Passaro - Projects" },
-    },
+      meta: {
+        title: "Chiara Passaro - Projects",
+        description: "Chiara Passaro Full Stack Web Developer and Teacher",
+      },
+    }
   ],
 });
 
