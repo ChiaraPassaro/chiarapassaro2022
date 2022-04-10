@@ -582,6 +582,7 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import "./assets/partials/variables";
+@import "./assets/partials/commons";
 
 //Custom Properties
 :root {
@@ -604,46 +605,6 @@ onUnmounted(() => {
   color: transparent;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-//Commons
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-a:hover {
-  filter: invert(0.8);
-}
-
-html {
-  font-size: 100%;
-  height: -webkit-fill-available;
-}
-
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-
-  font-family: "Roboto", sans-serif;
-  font-size: 1vmax;
-
-  @media screen and (max-width: $md) {
-    font-size: 1.4vmax;
-  }
-
-  @media screen and (max-width: $sm) {
-    font-size: 2vmax;
-  }
-
-  @media screen and (max-width: $xs) {
-    font-size: 4.3vmin;
-  }
-}
-
-#app {
-  overflow: hidden;
 }
 
 .dark-mode {
@@ -786,6 +747,7 @@ body {
       font-weight: 400;
     }
   }
+
   .footer {
     display: grid;
     grid-template-columns: 30% 70%;
