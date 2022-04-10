@@ -1,7 +1,10 @@
 <script setup>
 //Vue
-import { reactive, computed, onMounted, ref, watch, onUpdated } from "vue";
+import { computed, onMounted, ref, watch, onUpdated, onUnmounted } from "vue";
+import { state } from "./store";
+
 import { useRouter, useRoute } from "vue-router";
+
 import Header from "@/components/Header.vue";
 import Wave from "@/components/Wave.vue";
 import Night from "./components/icons/Night.vue";
@@ -11,25 +14,14 @@ import Graph from "./components/icons/Graph.vue";
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
 import { DateTime } from "luxon";
 
-//cytoscape form Map
-import cytoscape from "cytoscape";
-import cola from "cytoscape-cola";
-cytoscape.use(cola);
+//composables
+import { useCreateGradientColors } from "./composables/useCreateGradientColors";
+import { useGenerateBaseColors } from "./composables/useGenerateBaseColors";
+import { useInitGraph } from "./composables/useInitGraph";
 
 //router
 const router = useRouter();
 const route = useRoute();
-
-//State
-const state = reactive({
-  aside: false,
-  isDark: false,
-  footerIsOpen: false,
-  graph: {},
-  baseColorsWave: [],
-  now: {},
-  waveColorsHex: {},
-});
 
 //ref DOM map
 const map = ref(null);
@@ -315,143 +307,20 @@ const nightColors = computed(() => {
 
 // methods
 function initColors() {
-  //Set palettes
-  const palette = ColorPalettesRange.SetColorPalette(
-    state.baseColorsWave[whatColor.value].startColor
-  );
-  const gradientWave1 = palette.gradient({
+  const waveColorsHex = useCreateGradientColors({
+    colorStart: state.baseColorsWave[whatColor.value].startColor,
+    colorEnd: state.baseColorsWave[whatColor.value].endColor,
     numColors: 10,
-    endColor: state.baseColorsWave[whatColor.value].endColor,
   });
 
-  const waveColorsHex = {
-    wave1: [],
-    wave2: [],
+  state.waveColorsHex = {
+    wave1: waveColorsHex.map((element) => {
+      return element.printHex();
+    }),
+    wave2: waveColorsHex.reverse().map((element) => {
+      return element.printHex();
+    }),
   };
-
-  waveColorsHex.wave1 = gradientWave1.map((element) => {
-    return element.printHex();
-  });
-  waveColorsHex.wave2 = gradientWave1.reverse().map((element) => {
-    return element.printHex();
-  });
-  state.waveColorsHex = waveColorsHex;
-}
-
-function initGraph() {
-  return cytoscape({
-    hideEdgesOnViewport: true,
-    container: map.value,
-    autounselectify: true,
-    boxSelectionEnabled: false,
-    pannable: false,
-    userZoomingEnabled: false,
-    layout: {
-      name: "cola",
-      animate: true,
-      refresh: 1,
-      maxSimulationTime: 30000,
-      fit: true,
-      padding: 30,
-      nodeDimensionsIncludeLabels: false,
-      randomize: false,
-      avoidOverlap: true,
-      handleDisconnected: true,
-      convergenceThreshold: 0.01,
-      flow:
-        window.innerWidth < 1024 ? { axis: "x", minSeparation: 30 } : undefined,
-      nodeSpacing: function (node) {
-        return 18;
-      },
-      edgeLength: 40,
-    },
-    style: [
-      {
-        selector: "node",
-        style: {
-          "background-color": start.value,
-          label: "data(label)",
-          color: "data(color)",
-          "font-size": window.innerWidth > 1024 ? "9" : "12",
-          width: "data(size)",
-          height: "data(size)",
-          "border-width": "0.6",
-          "border-style": "solid",
-          "border-color": lineMap.value,
-        },
-      },
-      {
-        selector: "edge",
-        css: {
-          width: 0.4,
-          "line-color": lineMap.value,
-        },
-      },
-    ],
-    elements: elements.value,
-  })
-    .on("mouseover", "node", function (event) {
-      const node = event.target;
-      if (node.data("aside")) {
-        node.style("background-color", stop.value);
-        const label = node.style("label");
-        node.style("label", "Open " + label);
-      }
-    })
-    .on("mouseout", "node", function (event) {
-      const node = event.target;
-      if (node.data("aside")) {
-        node.style("background-color", start.value);
-        const label = node.style("label").replace("Open", "");
-        node.style("label", label);
-      }
-    })
-    .on("tap", "node", function (event) {
-      const node = event.target;
-      //open modal
-      if (node.data("aside")) {
-        const name = node.data("name");
-        const label = node.style("label").replace("Open", "");
-        node.style("label", label);
-
-        if (node.data("tag") === "articles") {
-          router.push({
-            name: "articles",
-            params: {
-              type: name,
-            },
-          });
-        } else if (node.data("tag") === "project") {
-          router.push({
-            name: "projects",
-            params: {
-              name,
-            },
-          });
-        }
-
-        state.aside = true;
-      }
-    })
-    .on("layoutstop", function () {
-      this.nodes()
-        .filter(function (element) {
-          return element.data("aside");
-        })
-        .forEach((element) => {
-          const jAni = element.animation({
-            style: {
-              width: element.data("size") + 10,
-              height: element.data("size") + 10,
-            },
-            duration: 1000,
-          });
-
-          setTimeout(() => {
-            jAni.play();
-          }, 1100);
-        });
-    });
 }
 
 function reloadGraph() {
@@ -462,15 +331,45 @@ function reloadGraph() {
         ? element.data("color", labelSecondary.value)
         : label.value
     );
+
   state.graph.destroy();
-  state.graph = initGraph();
+
+  state.graph = useInitGraph({
+    elementDOM: map.value,
+    bgColorStart: start.value,
+    bgColorEnd: stop.value,
+    lineMapColor: lineMap.value,
+    elements,
+    callback: openAside,
+  });
 }
 
 function closeAside() {
   router.push({
     name: "home",
   });
-  state.aside = false;
+
+  state.setAside(false);
+}
+
+function openAside({ tag, name }) {
+  state.setAside(true);
+
+  if (tag == "articles") {
+    router.push({
+      name: "articles",
+      params: {
+        type: name,
+      },
+    });
+  } else if (tag == "project") {
+    router.push({
+      name: "projects",
+      params: {
+        name,
+      },
+    });
+  }
 }
 
 //watchers
@@ -478,7 +377,14 @@ watch(
   () => whatColor.value, //if change reload colors and graph
   () => {
     initColors();
-    state.graph = initGraph();
+    state.graph = useInitGraph({
+      elementDOM: map.value,
+      bgColorStart: start.value,
+      bgColorEnd: stop.value,
+      lineMapColor: lineMap.value,
+      elements,
+      callback: openAside,
+    });
   }
 );
 
@@ -489,7 +395,7 @@ watch(
       Object.keys(route.params).includes("name")),
   () => {
     let name = route.params.name || route.params.type;
-    state.aside = elements.value.find((el) => el.data.name == name);
+    state.setAside(elements.value.find((el) => el.data.name == name));
   }
 );
 
@@ -506,15 +412,16 @@ watch(
 // Lifecycle Hooks
 onMounted(() => {
   //dark mode with prefers-color-scheme
-  state.isDark =
+  state.setIsDark(
     window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   // change dark mode listener
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
-      state.isDark = event.matches;
+      state.setIsDark(event.matches);
     });
 
   document.getElementById("app").style.backgroundColor = state.isDark
@@ -530,77 +437,23 @@ onMounted(() => {
   }, 30000);
 
   // Setup Colors for wave and fonts
-  state.baseColorsWave = [
-    {
-      startColor: new ColorPalettesRange.Hsl({
-        hue: 180,
-        saturation: 59,
-        brightness: 55,
-      }),
-      endColor: new ColorPalettesRange.Hsl({
-        hue: 208,
-        saturation: 45,
-        brightness: 75,
-      }),
-    },
-    {
-      startColor: new ColorPalettesRange.Hsl({
-        hue: 180,
-        saturation: 79,
-        brightness: 55,
-      }),
-      endColor: new ColorPalettesRange.Hsl({
-        hue: 208,
-        saturation: 65,
-        brightness: 65,
-      }),
-    },
-    {
-      startColor: new ColorPalettesRange.Hsl({
-        hue: 355,
-        saturation: 97,
-        brightness: 56,
-      }),
-      endColor: new ColorPalettesRange.Hsl({
-        hue: 32,
-        saturation: 76,
-        brightness: 60,
-      }),
-    },
-    {
-      startColor: new ColorPalettesRange.Hsl({
-        hue: 21,
-        saturation: 46,
-        brightness: 48,
-      }),
-      endColor: new ColorPalettesRange.Hsl({
-        hue: 174,
-        saturation: 25,
-        brightness: 52,
-      }),
-    },
-    {
-      startColor: new ColorPalettesRange.Hsl({
-        hue: 150,
-        saturation: 25,
-        brightness: 52,
-      }),
-      endColor: new ColorPalettesRange.Hsl({
-        hue: 250,
-        saturation: 25,
-        brightness: 52,
-      }),
-    },
-  ];
+  state.baseColorsWave = useGenerateBaseColors();
 
-  //setup colors
+  //setup now colors
   state.whatColor = Math.floor(state.now / 5);
   initColors();
 
   //start graph
   if (state.footerIsOpen) {
     setTimeout(() => {
-      state.graph = initGraph();
+      state.graph = useInitGraph({
+        elementDOM: map.value,
+        bgColorStart: start.value,
+        bgColorEnd: stop.value,
+        lineMapColor: lineMap.value,
+        elements,
+        callback: openAside,
+      });
     }, 300);
   }
 
@@ -610,12 +463,24 @@ onMounted(() => {
     if (state.graph) {
       state.graph.destroy();
     }
-    state.graph = initGraph();
+    state.graph = useInitGraph({
+      elementDOM: map.value,
+      bgColorStart: start.value,
+      bgColorEnd: stop.value,
+      lineMapColor: lineMap.value,
+      elements,
+      callback: openAside,
+    });
   });
 });
 
 onUpdated(() => {
-  state.aside = !!route.params.name || !!route.params.type;
+  state.setAside(!!route.params.name || !!route.params.type);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize");
+  window.removeEventListener("change");
 });
 </script>
 
@@ -706,7 +571,7 @@ onUpdated(() => {
     <!-- ico dark mode -->
     <div
       class="dark-mode"
-      @click="(state.isDark = !state.isDark), reloadGraph()"
+      @click="state.setIsDark(!state.isDark), reloadGraph()"
     >
       <Night class="dark-mode__ico" :colors="nightColors" />
     </div>
