@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
+//inseriamo typescript
 //Vue
 import { computed, onMounted, ref, watch, onUpdated, onUnmounted } from "vue";
 import { state } from "./store";
 
 import { useRouter, useRoute } from "vue-router";
 
-import Header from "@/components/Header.vue";
-import Wave from "@/components/Wave.vue";
+import Header from "./components/Header.vue";
+import Wave from "./components/Wave.vue";
 import Night from "./components/icons/Night.vue";
 import Graph from "./components/icons/Graph.vue";
 
@@ -24,7 +25,7 @@ const router = useRouter();
 const route = useRoute();
 
 //ref DOM map
-const map = ref(null);
+const map: HTMLElement = ref(null);
 
 // computed
 const whatColor = computed(() => {

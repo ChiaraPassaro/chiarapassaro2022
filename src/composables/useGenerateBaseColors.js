@@ -1,4 +1,5 @@
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
+import { baseColor } from "../types/baseColor";
 
 export function useGenerateBaseColors() {
   return [
@@ -7,7 +8,7 @@ export function useGenerateBaseColors() {
         hue: 180,
         saturation: 59,
         brightness: 55,
-      }),
+      }) as baseColor,
       endColor: new ColorPalettesRange.Hsl({
         hue: 208,
         saturation: 45,
