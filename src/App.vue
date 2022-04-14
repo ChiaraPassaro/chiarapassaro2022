@@ -353,12 +353,11 @@ function closeAside() {
     name: "home",
   });
 
-  state.setAside(false);
+  state.aside = false;
 }
 
 function openAside({ tag, name }) {
-  state.setAside(true);
-
+  state.aside = true;
   if (tag == "articles") {
     router.push({
       name: "articles",
@@ -376,7 +375,6 @@ function openAside({ tag, name }) {
   }
 }
 
-
 const resizeWindow = () => {
   state.footerIsOpen = false;
   if (state.graph) {
@@ -393,7 +391,7 @@ const resizeWindow = () => {
 };
 
 const changeDark = (event) => {
-  state.setIsDark(event.matches);
+  state.isDark = event.matches;
 };
 
 /**
@@ -422,15 +420,15 @@ watch(
   () => {
     let name = route.params.name || route.params.type;
     const status = !!elements.value.find((el) => el.data.name == name);
-    state.setAside(status);
+    state.aside = status;
   }
 );
 
 watch(
   () => route.meta.title,
   () => {
-    document.title = route.meta.title + '';
-    const description = route.meta.description + '';
+    document.title = route.meta.title;
+    const description = route.meta.description;
 
     document
       .querySelector('meta[name="description"]')
@@ -443,10 +441,9 @@ watch(
  */
 onMounted(() => {
   //dark mode with prefers-color-scheme
-  state.setIsDark(
+  state.isDark =
     window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   // change dark mode listener
   window
@@ -490,11 +487,11 @@ onMounted(() => {
 });
 
 onUpdated(() => {
-  state.setAside(!!route.params.name || !!route.params.type);
+  state.aside = !!route.params.name || !!route.params.type;
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize",resizeWindow);
+  window.removeEventListener("resize", resizeWindow);
   window.removeEventListener("change", changeDark);
 });
 </script>
@@ -586,7 +583,7 @@ onUnmounted(() => {
     <!-- ico dark mode -->
     <div
       class="dark-mode"
-      @click="state.setIsDark(!state.isDark), reloadGraph()"
+      @click="(state.isDark = !state.isDark), reloadGraph()"
     >
       <Night class="dark-mode__ico" :colors="nightColors" />
     </div>

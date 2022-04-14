@@ -25,6 +25,7 @@ export const useInitGraph = ({
   elements,
   callback,
 }) => {
+  console.log(callback);
   const setupCytoscape = {
     hideEdgesOnViewport: true,
     container: unref(elementDOM),
@@ -95,8 +96,7 @@ export const useInitGraph = ({
       if (node.data("aside")) {
         const nodeName = node.data("name");
         mouseLeaveNode(node, bgColorStart);
-
-        callback({ tag: node.data("tag"), nodeName });
+        callback({ tag: node.data("tag"), name: nodeName });
       }
     })
     .on("layoutstop", function () {

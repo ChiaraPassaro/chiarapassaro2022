@@ -15,7 +15,7 @@ const router = createRouter({
       meta: {
         title: "Chiara Passaro",
         description: "Chiara Passaro Full Stack Web Developer and Teacher",
-      }
+      },
     },
     {
       path: "/articles/:type",
@@ -40,7 +40,7 @@ const router = createRouter({
         title: "Chiara Passaro - Projects",
         description: "Chiara Passaro Full Stack Web Developer and Teacher",
       },
-    }
+    },
   ],
 });
 

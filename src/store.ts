@@ -7,13 +7,13 @@ interface stateInterface {
   isDark: boolean;
   isLoading: boolean;
   footerIsOpen: boolean;
+  error: boolean;
+  articles: string[];
+  graph: any;
   baseColorsWave: baseColor[];
   now: number;
   waveColorsHex: waveColors;
   whatColor: number;
-  graph: any;
-  setAside(status: boolean): void;
-  setIsDark(status: boolean): void;
 }
 
 //State
@@ -22,6 +22,8 @@ export const state: stateInterface = reactive({
   isDark: false,
   isLoading: false,
   footerIsOpen: false,
+  error: false,
+  articles: [],
   graph: {},
   baseColorsWave: [],
   now: 1,
@@ -30,10 +32,4 @@ export const state: stateInterface = reactive({
     wave2: [],
   },
   whatColor: 0,
-  setAside(status) {
-    this.aside = status;
-  },
-  setIsDark(status) {
-    this.isDark = status;
-  },
 });

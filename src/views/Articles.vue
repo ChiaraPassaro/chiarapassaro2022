@@ -1,35 +1,38 @@
 <script setup>
 import Article from "../components/Article.vue";
 import axios from "axios";
-import { reactive, watch, ref } from "vue";
+import { watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/icons/Loading.vue";
-
+import { state } from "../store";
 const route = useRoute();
 const router = useRouter();
-const state = reactive({ articles: [], isLoading: false, error: false });
 defineProps(["color"]);
 
-//Medium Feeds
+//Medium Feeds Setup
 const username = `chiarapassaro`;
 const RSSUrl = `https://medium.com/feed/@${username}`;
-const RSSConverter = `https://api.rss2json.com/v1/api.json?rss_url=${RSSUrl}`;
+const RSSConverter = `https://api.rss2json.com/v1/api.json?api_key=zrlou6ykfu3s2wfzerlb99yhyt4ybq1dll9mrgoj&rss_url=${RSSUrl}`;
 const type = ref(route.params.type);
-//TODO and errors
+
 async function fetchArticle(newType) {
   type.value = newType;
-  state.isLoading = true;
+  state.loading = true;
+
   try {
+    console.log("chiamata");
     const res = await axios.get(RSSConverter);
+
     if (newType == "all") {
       state.isLoading = false;
-
       return (state.articles = res.data.items);
     }
 
     state.articles = res.data.items.filter((element) => {
       return element.categories.includes(newType);
     });
+
+    console.log("chiamata", state.articles);
 
     if (state.articles.length === 0) {
       state.error = true;
@@ -43,7 +46,6 @@ async function fetchArticle(newType) {
 
     state.isLoading = false;
   } catch (err) {
-    // Handle Error Here
     router.push({
       name: "home",
     });
