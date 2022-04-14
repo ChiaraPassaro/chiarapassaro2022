@@ -6,9 +6,9 @@ interface Color {
   printHex: () => string;
   printHsl: () => string;
   printRgb: () => string;
-  setBrightness: () => string;
-  setHue: () => string;
-  setSaturation: () => string;
+  setBrightness: (number: number) => string;
+  setHue: (number: number) => string;
+  setSaturation: (number: number) => string;
 }
 
 export interface baseColor {

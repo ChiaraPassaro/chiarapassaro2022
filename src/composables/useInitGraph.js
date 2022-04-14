@@ -5,6 +5,18 @@ import cytoscape from "cytoscape";
 import cola from "cytoscape-cola";
 cytoscape.use(cola);
 
+function mouseOverNode(node, bgColorEnd) {
+  node.style("background-color", bgColorEnd);
+  const label = node.style("label");
+  node.style("label", "Open " + label);
+}
+
+function mouseLeaveNode(node, bgColorStart) {
+  node.style("background-color", bgColorStart);
+  const label = node.style("label").replace("Open", "");
+  node.style("label", label);
+}
+
 export const useInitGraph = ({
   elementDOM,
   bgColorStart,
@@ -13,7 +25,7 @@ export const useInitGraph = ({
   elements,
   callback,
 }) => {
-  const graph = cytoscape({
+  const setupCytoscape = {
     hideEdgesOnViewport: true,
     container: unref(elementDOM),
     autounselectify: true,
@@ -63,31 +75,28 @@ export const useInitGraph = ({
       },
     ],
     elements: elements.value,
-  })
+  };
+
+  const graph = cytoscape(setupCytoscape)
     .on("mouseover", "node", function (event) {
       const node = event.target;
       if (node.data("aside")) {
-        node.style("background-color", bgColorEnd);
-        const label = node.style("label");
-        node.style("label", "Open " + label);
+        mouseOverNode(node, bgColorEnd);
       }
     })
     .on("mouseout", "node", function (event) {
       const node = event.target;
       if (node.data("aside")) {
-        node.style("background-color", bgColorStart);
-        const label = node.style("label").replace("Open", "");
-        node.style("label", label);
+        mouseLeaveNode(node, bgColorStart);
       }
     })
     .on("tap", "node", function (event) {
       const node = event.target;
       if (node.data("aside")) {
-        const name = node.data("name");
-        const label = node.style("label").replace("Open", "");
-        node.style("label", label);
+        const nodeName = node.data("name");
+        mouseLeaveNode(node, bgColorStart);
 
-        callback({ tag: node.data("tag"), name });
+        callback({ tag: node.data("tag"), nodeName });
       }
     })
     .on("layoutstop", function () {

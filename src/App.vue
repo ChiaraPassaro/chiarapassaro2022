@@ -1,5 +1,4 @@
 <script setup lang="ts">
-//inseriamo typescript
 //Vue
 import { computed, onMounted, ref, watch, onUpdated, onUnmounted } from "vue";
 import { state } from "./store";
@@ -25,9 +24,11 @@ const router = useRouter();
 const route = useRoute();
 
 //ref DOM map
-const map: HTMLElement = ref(null);
+const map = ref(null);
 
-// computed
+/**
+ * computed
+ */
 const whatColor = computed(() => {
   return state.now ? Math.floor(state.now / 5) : 0;
 });
@@ -306,7 +307,9 @@ const nightColors = computed(() => {
     : state.waveColorsHex.wave1;
 });
 
-// methods
+/**
+ * methods
+ */
 function initColors() {
   const waveColorsHex = useCreateGradientColors({
     colorStart: state.baseColorsWave[whatColor.value].startColor,
@@ -373,7 +376,29 @@ function openAside({ tag, name }) {
   }
 }
 
-//watchers
+
+const resizeWindow = () => {
+  state.footerIsOpen = false;
+  if (state.graph) {
+    state.graph.destroy();
+  }
+  state.graph = useInitGraph({
+    elementDOM: map.value,
+    bgColorStart: start.value,
+    bgColorEnd: stop.value,
+    lineMapColor: lineMap.value,
+    elements,
+    callback: openAside,
+  });
+};
+
+const changeDark = (event) => {
+  state.setIsDark(event.matches);
+};
+
+/**
+ * watchers
+ */
 watch(
   () => whatColor.value, //if change reload colors and graph
   () => {
@@ -396,21 +421,26 @@ watch(
       Object.keys(route.params).includes("name")),
   () => {
     let name = route.params.name || route.params.type;
-    state.setAside(elements.value.find((el) => el.data.name == name));
+    const status = !!elements.value.find((el) => el.data.name == name);
+    state.setAside(status);
   }
 );
 
 watch(
   () => route.meta.title,
   () => {
-    document.title = route.meta.title;
+    document.title = route.meta.title + '';
+    const description = route.meta.description + '';
+
     document
       .querySelector('meta[name="description"]')
-      .setAttribute("content", route.meta.description);
+      .setAttribute("content", description);
   }
 );
 
-// Lifecycle Hooks
+/**
+ * Lifecycle Hooks
+ */
 onMounted(() => {
   //dark mode with prefers-color-scheme
   state.setIsDark(
@@ -421,15 +451,13 @@ onMounted(() => {
   // change dark mode listener
   window
     .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (event) => {
-      state.setIsDark(event.matches);
-    });
+    .addEventListener("change", changeDark);
 
   document.getElementById("app").style.backgroundColor = state.isDark
     ? "black"
     : "white";
 
-  //set time
+  //set time for colors
   state.now = DateTime.now().setZone("Europe/Rome").hour;
 
   //check time interval
@@ -458,21 +486,7 @@ onMounted(() => {
     }, 300);
   }
 
-  //resize graph
-  window.addEventListener("resize", () => {
-    state.footerIsOpen = false;
-    if (state.graph) {
-      state.graph.destroy();
-    }
-    state.graph = useInitGraph({
-      elementDOM: map.value,
-      bgColorStart: start.value,
-      bgColorEnd: stop.value,
-      lineMapColor: lineMap.value,
-      elements,
-      callback: openAside,
-    });
-  });
+  window.addEventListener("resize", resizeWindow);
 });
 
 onUpdated(() => {
@@ -480,8 +494,8 @@ onUpdated(() => {
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize");
-  window.removeEventListener("change");
+  window.removeEventListener("resize",resizeWindow);
+  window.removeEventListener("change", changeDark);
 });
 </script>
 
