@@ -1,6 +1,6 @@
 <script setup lang="ts">
 //Vue
-import { computed, onMounted, ref, watch, onUpdated, onUnmounted } from "vue";
+import { computed, onMounted, ref, watch, onUnmounted } from "vue";
 import { state } from "./store";
 
 import { useRouter, useRoute } from "vue-router";
@@ -18,6 +18,7 @@ import { DateTime } from "luxon";
 import { useCreateGradientColors } from "./composables/useCreateGradientColors";
 import { useGenerateBaseColors } from "./composables/useGenerateBaseColors";
 import { useInitGraph } from "./composables/useInitGraph";
+import useGetNodeElements from "./composables/useGetNodeElements";
 
 //router
 const router = useRouter();
@@ -26,278 +27,13 @@ const route = useRoute();
 //ref DOM map
 const map = ref(null);
 
+const elements = useGetNodeElements();
+
 /**
  * computed
  */
 const whatColor = computed(() => {
   return state.now ? Math.floor(state.now / 5) : 0;
-});
-
-const start = computed(() => {
-  if (state.baseColorsWave.length) {
-    return state.baseColorsWave[whatColor.value].startColor.printHex();
-  }
-  return "";
-});
-
-const stop = computed(() => {
-  if (state.baseColorsWave.length) {
-    return state.baseColorsWave[whatColor.value].endColor.printHex();
-  }
-  return "";
-});
-
-const label = computed(() => {
-  if (state.baseColorsWave.length) {
-    const baseColor = state.baseColorsWave[whatColor.value].endColor;
-    baseColor.setBrightness(60);
-    const palette = ColorPalettesRange.SetColorPalette(
-      state.baseColorsWave[whatColor.value].endColor
-    );
-    const [, color] = palette.triad();
-    return color.printHex();
-  }
-  return "";
-});
-
-const labelSecondary = computed(() => {
-  return state.isDark ? "white" : "black";
-});
-
-const lineMap = computed(() => {
-  const baseColor = state.baseColorsWave[whatColor.value].endColor;
-  baseColor.setBrightness(90);
-  return baseColor.printHex();
-});
-
-//Elements map
-const elements = computed(() => {
-  return [
-    {
-      data: {
-        id: "1",
-        label: "Articles",
-        name: "all",
-        tag: "articles",
-        size: 6,
-        aside: true,
-        color: label.value,
-      },
-      renderedPosition: {
-        x: -10000,
-        y: window.innerHeight > 1200 ? -1000 : 3000,
-      },
-    },
-
-    {
-      data: {
-        id: "2",
-        label: "Projects",
-        name: "project",
-        tag: "project",
-        size: 6,
-        aside: false,
-        color: label.value,
-      },
-      renderedPosition: {
-        x: window.innerHeight > 1200 ? 0 : 20000,
-        y: window.innerHeight > 1200 ? 0 : 10000,
-      },
-    },
-    {
-      data: {
-        id: "3",
-        label: "Javascript",
-        name: "javascript",
-        tag: "articles",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "4",
-        label: "Ergonomics",
-        name: "ergonomics",
-        tag: "articles",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "5",
-        label: "Vuejs",
-        name: "vuejs",
-        tag: "articles",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "6",
-        label: "Teaching",
-        name: "teaching",
-        size: 6,
-        aside: false,
-        color: label.value,
-      },
-    },
-    {
-      data: {
-        id: "7",
-        label: "HTML",
-        name: "html",
-        size: 5,
-        aside: false,
-        color: labelSecondary.value,
-      },
-    },
-
-    {
-      data: {
-        id: "8",
-        label: "Laravel",
-        name: "laravel",
-        size: 5,
-        aside: false,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "9",
-        label: "Color Palettes Range NPM",
-        name: "colorPalettesRangeNpm",
-        tag: "project",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "10",
-        label: "Vue Gantt",
-        name: "vueGantt",
-        tag: "project",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "12",
-        label: "SASS",
-        name: "sass",
-        size: 5,
-        aside: false,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        id: "13",
-        label: "Color Palettes Range App",
-        name: "colorPalettesRangeApp",
-        tag: "project",
-        size: 5,
-        aside: true,
-        color: labelSecondary.value,
-      },
-    },
-    {
-      data: {
-        source: "3",
-        target: "1",
-      },
-    },
-    {
-      data: {
-        source: "1",
-        target: "4",
-      },
-    },
-
-    {
-      data: {
-        source: "1",
-        target: "5",
-      },
-    },
-    {
-      data: {
-        source: "1",
-        target: "4",
-      },
-    },
-    {
-      data: {
-        source: "2",
-        target: "5",
-      },
-    },
-    {
-      data: {
-        source: "2",
-        target: "12",
-      },
-    },
-    {
-      data: {
-        source: "2",
-        target: "9",
-      },
-    },
-    {
-      data: {
-        source: "2",
-        target: "10",
-      },
-    },
-
-    {
-      data: {
-        source: "6",
-        target: "3",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "7",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "12",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "8",
-      },
-    },
-    {
-      data: {
-        source: "6",
-        target: "5",
-      },
-    },
-    {
-      data: {
-        source: "2",
-        target: "13",
-      },
-    },
-  ];
 });
 
 const nightColors = computed(() => {
@@ -310,7 +46,24 @@ const nightColors = computed(() => {
 /**
  * methods
  */
-function initColors() {
+const initColors = () => {
+  state.setWhatColor(whatColor.value);
+  state.setStart(state.baseColorsWave[whatColor.value].startColor.printHex());
+  state.setStop(state.baseColorsWave[whatColor.value].endColor.printHex());
+
+  const paletteLabel = ColorPalettesRange.SetColorPalette(
+    state.baseColorsWave[whatColor.value].endColor
+  );
+  const [, colorLabel] = paletteLabel.triad();
+  colorLabel.setBrightness(30);
+  state.setLabel(colorLabel.printHex());
+
+  state.setLabelSecondary(state.isDark ? "white" : "black");
+
+  const baseColorLineMap = state.baseColorsWave[whatColor.value].endColor;
+  baseColorLineMap.setBrightness(90);
+  state.setLineMap(baseColorLineMap.printHex());
+
   const waveColorsHex = useCreateGradientColors({
     colorStart: state.baseColorsWave[whatColor.value].startColor,
     colorEnd: state.baseColorsWave[whatColor.value].endColor,
@@ -325,36 +78,37 @@ function initColors() {
       return element.printHex();
     }),
   };
-}
+};
 
-function reloadGraph() {
+const reloadGraph = () => {
+  //change color labels
   state.graph
     .nodes()
     .forEach((element) =>
-      element.data("color") !== label.value
-        ? element.data("color", labelSecondary.value)
-        : label.value
+      element.data("color") !== state.label
+        ? element.data("color", state.labelSecondary)
+        : state.label
     );
 
   state.graph.destroy();
 
   state.graph = useInitGraph({
     elementDOM: map.value,
-    bgColorStart: start.value,
-    bgColorEnd: stop.value,
-    lineMapColor: lineMap.value,
+    bgColorStart: state.start,
+    bgColorEnd: state.stop,
+    lineMapColor: state.lineMap,
     elements,
     callback: openAside,
   });
-}
+};
 
-function closeAside() {
+const closeAside = () => {
   router.push({
     name: "home",
   });
-}
+};
 
-function openAside({ tag, name }) {
+const openAside = ({ tag, name }) => {
   if (tag == "articles") {
     router.push({
       name: "articles",
@@ -370,25 +124,24 @@ function openAside({ tag, name }) {
       },
     });
   }
-}
+};
 
 const resizeWindow = () => {
   state.setFooterIsOpen(false);
-  if (state.graph) {
-    state.graph.destroy();
-  }
+  state.graph?.destroy();
+
   state.graph = useInitGraph({
     elementDOM: map.value,
-    bgColorStart: start.value,
-    bgColorEnd: stop.value,
-    lineMapColor: lineMap.value,
+    bgColorStart: state.start,
+    bgColorEnd: state.stop,
+    lineMapColor: state.lineMap,
     elements,
     callback: openAside,
   });
 };
 
 const changeDark = (event) => {
-  state.setIsDark(event.matches);
+  state.setIsDark(event?.matches || !state.isDark);
 };
 
 /**
@@ -400,9 +153,9 @@ watch(
     initColors();
     state.graph = useInitGraph({
       elementDOM: map.value,
-      bgColorStart: start.value,
-      bgColorEnd: stop.value,
-      lineMapColor: lineMap.value,
+      bgColorStart: state.start,
+      bgColorEnd: state.stop,
+      lineMapColor: state.lineMap,
       elements,
       callback: openAside,
     });
@@ -431,6 +184,14 @@ watch(
     document
       .querySelector('meta[name="description"]')
       .setAttribute("content", description);
+  }
+);
+
+watch(
+  () => state.isDark,
+  () => {
+    state.setLabelSecondary(state.isDark ? "white" : "black");
+    reloadGraph();
   }
 );
 
@@ -466,16 +227,15 @@ onMounted(() => {
 
   //setup now colors
   state.whatColor = Math.floor(state.now / 5);
-  initColors();
 
   //start graph
   if (state.footerIsOpen) {
     setTimeout(() => {
       state.graph = useInitGraph({
         elementDOM: map.value,
-        bgColorStart: start.value,
-        bgColorEnd: stop.value,
-        lineMapColor: lineMap.value,
+        bgColorStart: state.start,
+        bgColorEnd: state.stop,
+        lineMapColor: state.lineMap,
         elements,
         callback: openAside,
       });
@@ -497,8 +257,8 @@ onUnmounted(() => {
     class="container"
     :class="{ dark: state.isDark }"
     :style="`
-    --start: ${start}; 
-    --stop: ${stop}; 
+    --start: ${state.start}; 
+    --stop: ${state.stop}; 
     --text-color: ${!state.footerIsOpen && state.isDark ? 'white' : 'black'}; 
     --bg-aside: ${state.isDark ? '#212121' : 'black'};
     --bg: ${
@@ -515,8 +275,8 @@ onUnmounted(() => {
     <main
       class="main"
       :style="`
-      --start: ${start};
-      --stop: ${stop};
+      --start: ${state.start};
+      --stop: ${state.stop};
       `"
     >
       <RouterView />
@@ -530,7 +290,7 @@ onUnmounted(() => {
     <!-- graph -->
     <div
       class="open-footer"
-      @click="state.setFooterIsOpen(!state.footerIsOpen), reloadGraph()"
+      @click="state.setFooterIsOpen(!state.footerIsOpen)"
       :class="{ open: state.footerIsOpen }"
       :style="`
         --bg: ${
@@ -569,16 +329,16 @@ onUnmounted(() => {
       </a>
       <div class="aside__content">
         <!-- aside router view -->
-        <RouterView name="aside" :color="{ start, stop }" />
+        <RouterView
+          name="aside"
+          :color="{ start: state.start, stop: state.stop }"
+        />
       </div>
     </aside>
     <!-- /aside -->
 
     <!-- ico dark mode -->
-    <div
-      class="dark-mode"
-      @click="(state.isDark = !state.isDark), reloadGraph()"
-    >
+    <div class="dark-mode" @click="changeDark">
       <Night class="dark-mode__ico" :colors="nightColors" />
     </div>
     <!-- /ico dark mode -->
