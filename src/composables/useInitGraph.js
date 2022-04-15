@@ -25,7 +25,6 @@ export const useInitGraph = ({
   elements,
   callback,
 }) => {
-  console.log(callback);
   const setupCytoscape = {
     hideEdgesOnViewport: true,
     container: unref(elementDOM),

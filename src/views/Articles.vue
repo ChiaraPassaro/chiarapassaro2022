@@ -17,34 +17,32 @@ const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
   type.value = newType;
-  state.loading = true;
+  state.setIsLoading(true);
 
   try {
-    console.log("chiamata");
     const res = await axios.get(RSSConverter);
 
     if (newType == "all") {
-      state.isLoading = false;
-      return (state.articles = res.data.items);
+      state.setIsLoading(false);
+      return state.setArticles(res.data.items);
     }
 
-    state.articles = res.data.items.filter((element) => {
-      return element.categories.includes(newType);
-    });
-
-    console.log("chiamata", state.articles);
+    state.setArticles(
+      res.data.items.filter((element) => {
+        return element.categories.includes(newType);
+      })
+    );
 
     if (state.articles.length === 0) {
-      state.error = true;
+      state.setError(true);
       setTimeout(() => {
-        state.error = false;
+        state.setError(false);
         router.push({
           name: "home",
         });
       }, 4000);
     }
-
-    state.isLoading = false;
+    state.setIsLoading(false);
   } catch (err) {
     router.push({
       name: "home",

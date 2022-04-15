@@ -352,12 +352,9 @@ function closeAside() {
   router.push({
     name: "home",
   });
-
-  state.aside = false;
 }
 
 function openAside({ tag, name }) {
-  state.aside = true;
   if (tag == "articles") {
     router.push({
       name: "articles",
@@ -376,7 +373,7 @@ function openAside({ tag, name }) {
 }
 
 const resizeWindow = () => {
-  state.footerIsOpen = false;
+  state.setFooterIsOpen(false);
   if (state.graph) {
     state.graph.destroy();
   }
@@ -391,7 +388,7 @@ const resizeWindow = () => {
 };
 
 const changeDark = (event) => {
-  state.isDark = event.matches;
+  state.setIsDark(event.matches);
 };
 
 /**
@@ -413,14 +410,15 @@ watch(
 );
 
 watch(
-  () =>
-    (route.params.type || route.params.name) &&
-    (Object.keys(route.params).includes("type") ||
-      Object.keys(route.params).includes("name")),
+  () => route.params,
   () => {
-    let name = route.params.name || route.params.type;
-    const status = !!elements.value.find((el) => el.data.name == name);
-    state.aside = status;
+    let name = route.params?.name || route.params?.type;
+
+    const status = name
+      ? !!elements.value.find((el) => el.data.name == name)
+      : false;
+
+    state.setAside(status);
   }
 );
 
@@ -441,9 +439,10 @@ watch(
  */
 onMounted(() => {
   //dark mode with prefers-color-scheme
-  state.isDark =
+  state.setIsDark(
     window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
   // change dark mode listener
   window
@@ -486,10 +485,6 @@ onMounted(() => {
   window.addEventListener("resize", resizeWindow);
 });
 
-onUpdated(() => {
-  state.aside = !!route.params.name || !!route.params.type;
-});
-
 onUnmounted(() => {
   window.removeEventListener("resize", resizeWindow);
   window.removeEventListener("change", changeDark);
@@ -499,7 +494,6 @@ onUnmounted(() => {
 <template>
   <!-- container  -->
   <div
-    v-if="!state.isLoading"
     class="container"
     :class="{ dark: state.isDark }"
     :style="`
@@ -536,7 +530,7 @@ onUnmounted(() => {
     <!-- graph -->
     <div
       class="open-footer"
-      @click="(state.footerIsOpen = !state.footerIsOpen), reloadGraph()"
+      @click="state.setFooterIsOpen(!state.footerIsOpen), reloadGraph()"
       :class="{ open: state.footerIsOpen }"
       :style="`
         --bg: ${
