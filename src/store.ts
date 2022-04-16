@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 import { baseColor } from "./types/baseColor";
+import { color } from "./types/color";
 import { waveColors } from "./types/waveColors";
-
 interface stateInterface {
   aside: boolean;
   isDark: boolean;
@@ -31,6 +31,7 @@ interface stateInterface {
   setLabel(color: string): void;
   setLabelSecondary(color: string): void;
   setLineMap(color: string): void;
+  setWaveColors(colors: color[]): void;
 }
 
 //State

@@ -10,12 +10,11 @@ import Wave from "./components/Wave.vue";
 import Night from "./components/icons/Night.vue";
 import Graph from "./components/icons/Graph.vue";
 
-//colorpalette
-import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
+//date
 import { DateTime } from "luxon";
 
 //composables
-import { useCreateGradientColors } from "./composables/useCreateGradientColors";
+import useInitColors from "./composables/useInitColors";
 import { useGenerateBaseColors } from "./composables/useGenerateBaseColors";
 import { useInitGraph } from "./composables/useInitGraph";
 import useGetNodeElements from "./composables/useGetNodeElements";
@@ -27,9 +26,9 @@ const route = useRoute();
 //ref DOM map
 const map = ref(null);
 
-/**
+/** ---------------------------
  * computed
- */
+ * --------------------------- */
 const elements = useGetNodeElements();
 
 const whatColor = computed(() => {
@@ -43,39 +42,9 @@ const iconDarkModeColor = computed(() => {
     : state.waveColorsHex.wave1;
 });
 
-/**
+/** ---------------------------
  * methods
- */
-const initColors = () => {
-  state.setWhatColor(whatColor.value);
-  state.setStart(state.baseColorsWave[whatColor.value].startColor.printHex());
-  state.setStop(state.baseColorsWave[whatColor.value].endColor.printHex());
-
-  const paletteLabel = ColorPalettesRange.SetColorPalette(
-    state.baseColorsWave[whatColor.value].endColor
-  );
-  const [, colorLabel] = paletteLabel.triad();
-  colorLabel.setBrightness(30);
-  state.setLabel(colorLabel.printHex());
-
-  state.setLabelSecondary(state.isDark ? "white" : "black");
-
-  const baseColorLineMap = new ColorPalettesRange.Hsl({
-    hue: state.baseColorsWave[whatColor.value].endColor.getHue(),
-    saturation: state.baseColorsWave[whatColor.value].endColor.getSaturation(),
-    brightness: state.baseColorsWave[whatColor.value].endColor.getBrightness(),
-  });
-  baseColorLineMap.setBrightness(90);
-  state.setLineMap(baseColorLineMap.printHex());
-
-  const waveColorsHex = useCreateGradientColors({
-    colorStart: state.baseColorsWave[whatColor.value].startColor,
-    colorEnd: state.baseColorsWave[whatColor.value].endColor,
-    numColors: 10,
-  });
-
-  state.setWaveColors(waveColorsHex);
-};
+ * --------------------------- */
 
 const reloadGraph = () => {
   //change color labels
@@ -147,7 +116,7 @@ const changeDark = (event) => {
 watch(
   () => whatColor.value, //if change reload colors and graph
   () => {
-    initColors();
+    useInitColors(whatColor.value);
     state.graph = useInitGraph({
       elementDOM: map.value,
       bgColorStart: state.start,
@@ -185,7 +154,7 @@ watch(
 );
 
 watch(
-  () => state.isDark,
+  () => state.isDark, //reset colors if change DarkMode
   () => {
     state.setLabelSecondary(state.isDark ? "white" : "black");
     reloadGraph();
