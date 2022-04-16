@@ -3,7 +3,6 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/icons/Loading.vue";
-
 import { state } from "../store";
 
 import axios from "axios";
@@ -25,8 +24,10 @@ onMounted(() => {
 
   hljs.registerLanguage("javascript", jsHighlight);
   hljs.highlightAll();
+  const filePath = `${location.protocol}//${window.location.host}/md/${name.value}.md`;
+
   axios
-    .get(`${location.protocol}//${window.location.host}/md/${name.value}.md`)
+    .get(filePath)
     .then((result) => {
       let markdownResult = marked(result.data, {
         highlight: function (markdown) {
@@ -36,6 +37,7 @@ onMounted(() => {
       });
       markdownResult = markdownResult.replaceAll("<img", '<img loading="lazy"');
       markdown.value = markdownResult;
+
       state.setIsLoading(false);
     })
     .catch(() => {
@@ -88,7 +90,6 @@ onMounted(() => {
 .container .content {
   height: 100%;
   font-size: 1em;
-
   @media screen and (max-width: $sm) {
     font-size: 0.7em;
   }
