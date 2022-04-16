@@ -1,8 +1,10 @@
 <script setup>
 // vue
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/icons/Loading.vue";
+
+import { state } from "../store";
 
 import axios from "axios";
 
@@ -14,13 +16,12 @@ import jsHighlight from "highlight.js/lib/languages/javascript";
 const route = useRoute();
 const router = useRouter();
 const name = ref(route.params.name);
-const state = reactive({ isLoading: false, error: false });
 
 const markdown = ref("");
 defineProps(["color"]);
 
 onMounted(() => {
-  state.isLoading = true;
+  state.setIsLoading(true);
 
   hljs.registerLanguage("javascript", jsHighlight);
   hljs.highlightAll();
@@ -35,14 +36,14 @@ onMounted(() => {
       });
       markdownResult = markdownResult.replaceAll("<img", '<img loading="lazy"');
       markdown.value = markdownResult;
-      state.isLoading = false;
+      state.setIsLoading(false);
     })
     .catch(() => {
-      state.isLoading = false;
-      state.error = true;
+      state.setIsLoading(false);
+      state.setError(true);
 
       setTimeout(() => {
-        state.error = false;
+        state.setError(false);
 
         router.push({
           name: "home",
