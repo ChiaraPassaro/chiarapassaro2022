@@ -91,4 +91,11 @@ export const state: stateInterface = reactive({
   setLineMap(color) {
     this.lineMap = color;
   },
+  setWaveColors(colors) {
+    this.waveColorsHex.wave1 = colors.map((element) => element.printHex());
+
+    this.waveColorsHex.wave2 = colors
+      .reverse()
+      .map((element) => element.printHex());
+  },
 });

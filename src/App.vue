@@ -10,7 +10,7 @@ import Wave from "./components/Wave.vue";
 import Night from "./components/icons/Night.vue";
 import Graph from "./components/icons/Graph.vue";
 
-// colorpalette
+//colorpalette
 import ColorPalettesRange from "@chiarapassaro/color-palettes-range/src/js/index";
 import { DateTime } from "luxon";
 
@@ -27,16 +27,16 @@ const route = useRoute();
 //ref DOM map
 const map = ref(null);
 
-const elements = useGetNodeElements();
-
 /**
  * computed
  */
+const elements = useGetNodeElements();
+
 const whatColor = computed(() => {
   return state.now ? Math.floor(state.now / 5) : 0;
 });
 
-const nightColors = computed(() => {
+const iconDarkModeColor = computed(() => {
   return (!state.footerIsOpen && state.isDark) ||
     (!state.isDark && state.footerIsOpen)
     ? false
@@ -60,7 +60,11 @@ const initColors = () => {
 
   state.setLabelSecondary(state.isDark ? "white" : "black");
 
-  const baseColorLineMap = state.baseColorsWave[whatColor.value].endColor;
+  const baseColorLineMap = new ColorPalettesRange.Hsl({
+    hue: state.baseColorsWave[whatColor.value].endColor.getHue(),
+    saturation: state.baseColorsWave[whatColor.value].endColor.getSaturation(),
+    brightness: state.baseColorsWave[whatColor.value].endColor.getBrightness(),
+  });
   baseColorLineMap.setBrightness(90);
   state.setLineMap(baseColorLineMap.printHex());
 
@@ -70,14 +74,7 @@ const initColors = () => {
     numColors: 10,
   });
 
-  state.waveColorsHex = {
-    wave1: waveColorsHex.map((element) => {
-      return element.printHex();
-    }),
-    wave2: waveColorsHex.reverse().map((element) => {
-      return element.printHex();
-    }),
-  };
+  state.setWaveColors(waveColorsHex);
 };
 
 const reloadGraph = () => {
@@ -339,7 +336,7 @@ onUnmounted(() => {
 
     <!-- ico dark mode -->
     <div class="dark-mode" @click="changeDark">
-      <Night class="dark-mode__ico" :colors="nightColors" />
+      <Night class="dark-mode__ico" :colors="iconDarkModeColor" />
     </div>
     <!-- /ico dark mode -->
   </div>
@@ -378,7 +375,7 @@ onUnmounted(() => {
   top: 1%;
   left: 1%;
   z-index: 4;
-  font-size: 1.7em;
+  font-size: 1.5em;
   color: var(--text-color);
   cursor: pointer;
   &__ico {
