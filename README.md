@@ -1,35 +1,20 @@
-# chiarapassaro2022
+# Chiarapassaro.dev
 
-This template should help get you started developing with Vue 3 in Vite.
+Technologies:
+* Vue 3 Composition API & Vue Router 
+* Typescript
+* animejs 
+* Cytoscape
+* Color Palettes Range 
+* marked for parse md to html
+* hljs 
+* axios
+* luxon
 
-## Recommended IDE Setup
+This is an experiment with colors and SVG animations.
+The colors of text and waves change at certain hours.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
-## Customize configuration
+You can see it at this address <br/>
+[https://chiarapassaro.dev/](https://chiarapassaro.dev/)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```

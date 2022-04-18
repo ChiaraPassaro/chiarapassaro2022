@@ -328,15 +328,15 @@ onUnmounted(() => {
 //Mixins
 @mixin radial {
   text-align: right;
-  animation: alternate;
-  animation-duration: 2s;
   animation-name: gradient;
+  animation-direction: alternate;
+  animation-duration: 2s;
   animation-iteration-count: infinite;
   background: radial-gradient(circle, var(--start) 0, var(--stop) 100%);
   background-clip: text;
   color: transparent;
+  -webkit-text-fill-color: var(--start);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .dark-mode {
@@ -526,7 +526,7 @@ onUnmounted(() => {
       width: 1em;
     }
     span {
-      @include radial();
+      @include radial;
       font-size: 0.7em;
     }
     @media screen and (max-width: $sm) {

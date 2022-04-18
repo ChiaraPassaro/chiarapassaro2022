@@ -11,8 +11,8 @@ defineProps(["color"]);
 
 //Medium Feeds Setup
 const username = `chiarapassaro`;
-const RSSUrl = `https://medium.com/feed/@${username}`;
-const RSSConverter = `https://api.rss2json.com/v1/api.json?api_key=zrlou6ykfu3s2wfzerlb99yhyt4ybq1dll9mrgoj&rss_url=${RSSUrl}`;
+const RSSUrl = encodeURI(`https://medium.com/feed/@${username}`);
+const RSSConverter = `https://young-everglades-77798.herokuapp.com/${RSSUrl}`;
 const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
@@ -20,7 +20,10 @@ async function fetchArticle(newType) {
   state.setIsLoading(true);
 
   try {
+    console.log(RSSConverter);
     const res = await axios.get(RSSConverter);
+
+    console.log(res);
 
     if (newType == "all") {
       state.setIsLoading(false);
