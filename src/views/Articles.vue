@@ -22,7 +22,10 @@ async function fetchArticle(newType) {
   try {
     console.log(RSSConverter);
     const res = await axios.get(RSSConverter, {
-      headers: { "X-Requested-With": "XMLHttpRequest" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "x-requested-with": "XMLHttpRequest",
+      },
     });
 
     console.log(res);
@@ -49,6 +52,7 @@ async function fetchArticle(newType) {
     }
     state.setIsLoading(false);
   } catch (err) {
+    console.log(err);
     router.push({
       name: "home",
     });
