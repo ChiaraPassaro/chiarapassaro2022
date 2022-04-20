@@ -21,11 +21,11 @@ async function fetchArticle(newType) {
   state.setIsLoading(true);
   const config = {
     method: "get",
-    url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
+    url: "https://corsmedium.herokuapp.com:8080/https://medium.com/feed/@chiarapassaro",
     headers: {
       "x-requested-with": "XMLHttpRequest",
-      "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/json",
+      Origin: "https://chiarapassaro.dev",
     },
   };
 
