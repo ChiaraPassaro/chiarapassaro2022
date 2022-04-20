@@ -16,15 +16,16 @@ const RSSConverter = `https://corsmedium.herokuapp.com/${RSSUrl}`;
 const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
+  console.log("fetch");
   type.value = newType;
   state.setIsLoading(true);
   const config = {
     method: "get",
     url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
-    crossdomain: true,
-
     headers: {
       "x-requested-with": "XMLHttpRequest",
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
     },
   };
 
