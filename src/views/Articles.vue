@@ -21,7 +21,9 @@ async function fetchArticle(newType) {
 
   try {
     console.log(RSSConverter);
-    const res = await axios.get(RSSConverter, {
+    const res = await axios({
+      method: "get",
+      url: RSSConverter,
       headers: { Origin: "https://medium.com/" },
     });
 
