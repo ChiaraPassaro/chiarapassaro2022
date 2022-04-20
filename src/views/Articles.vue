@@ -21,6 +21,8 @@ async function fetchArticle(newType) {
   const config = {
     method: "get",
     url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
+    crossdomain: true,
+
     headers: {
       "x-requested-with": "XMLHttpRequest",
     },
