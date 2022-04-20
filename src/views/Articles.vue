@@ -29,26 +29,26 @@ async function fetchArticle(newType) {
 
     console.log(res);
 
-    if (newType == "all") {
-      state.setIsLoading(false);
-      return state.setArticles(res.data.items);
-    }
+    // if (newType == "all") {
+    //   state.setIsLoading(false);
+    //   return state.setArticles(res.data.items);
+    // }
 
-    state.setArticles(
-      res.data.items.filter((element) => {
-        return element.categories.includes(newType);
-      })
-    );
+    // state.setArticles(
+    //   res.data.items.filter((element) => {
+    //     return element.categories.includes(newType);
+    //   })
+    // );
 
-    if (state.articles.length === 0) {
-      state.setError(true);
-      setTimeout(() => {
-        state.setError(false);
-        router.push({
-          name: "home",
-        });
-      }, 4000);
-    }
+    // if (state.articles.length === 0) {
+    //   state.setError(true);
+    //   setTimeout(() => {
+    //     state.setError(false);
+    //     router.push({
+    //       name: "home",
+    //     });
+    //   }, 4000);
+    // }
     state.setIsLoading(false);
   } catch (err) {
     console.log(err);
