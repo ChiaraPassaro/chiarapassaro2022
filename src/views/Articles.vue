@@ -18,46 +18,60 @@ const type = ref(route.params.type);
 async function fetchArticle(newType) {
   type.value = newType;
   state.setIsLoading(true);
+  const config = {
+    method: "get",
+    url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
+    headers: {
+      "x-requested-with": "XMLHttpRequest",
+    },
+  };
 
-  try {
-    console.log(RSSConverter);
-    const res = await axios({
-      method: "get",
-      url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
-      headers: {
-        "x-requested-with": "XMLHttpRequest",
-      },
+  axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
     });
+  // try {
+  //   console.log(RSSConverter);
+  //   const res = await axios({
+  //     method: "get",
+  //     url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
+  //     headers: {
+  //       "x-requested-with": "XMLHttpRequest",
+  //     },
+  //   });
 
-    console.log(res);
+  //   console.log(res);
 
-    // if (newType == "all") {
-    //   state.setIsLoading(false);
-    //   return state.setArticles(res.data.items);
-    // }
+  //   // if (newType == "all") {
+  //   //   state.setIsLoading(false);
+  //   //   return state.setArticles(res.data.items);
+  //   // }
 
-    // state.setArticles(
-    //   res.data.items.filter((element) => {
-    //     return element.categories.includes(newType);
-    //   })
-    // );
+  //   // state.setArticles(
+  //   //   res.data.items.filter((element) => {
+  //   //     return element.categories.includes(newType);
+  //   //   })
+  //   // );
 
-    // if (state.articles.length === 0) {
-    //   state.setError(true);
-    //   setTimeout(() => {
-    //     state.setError(false);
-    //     router.push({
-    //       name: "home",
-    //     });
-    //   }, 4000);
-    // }
-    state.setIsLoading(false);
-  } catch (err) {
-    console.log(err);
-    router.push({
-      name: "home",
-    });
-  }
+  //   // if (state.articles.length === 0) {
+  //   //   state.setError(true);
+  //   //   setTimeout(() => {
+  //   //     state.setError(false);
+  //   //     router.push({
+  //   //       name: "home",
+  //   //     });
+  //   //   }, 4000);
+  //   // }
+  //   state.setIsLoading(false);
+  // } catch (err) {
+  //   console.log(err);
+  //   router.push({
+  //     name: "home",
+  //   });
+  // }
 }
 
 fetchArticle(type.value);
