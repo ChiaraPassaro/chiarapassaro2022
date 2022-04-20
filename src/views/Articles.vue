@@ -11,8 +11,8 @@ defineProps(["color"]);
 
 //Medium Feeds Setup
 const username = `chiarapassaro`;
-const RSSUrl = encodeURI(`https://medium.com/feed/@${username}`);
-const RSSConverter = `https://young-everglades-77798.herokuapp.com/${RSSUrl}`;
+const RSSUrl = `https://medium.com/feed/@${username}`;
+const RSSConverter = `https://corsmedium.herokuapp.com/${RSSUrl}`;
 const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
@@ -24,7 +24,7 @@ async function fetchArticle(newType) {
     const res = await axios({
       method: "get",
       url: RSSConverter,
-      headers: { Origin: "https://medium.com/" },
+      headers: { "x-requested-with": "XMLHttpRequest" },
     });
 
     console.log(res);
