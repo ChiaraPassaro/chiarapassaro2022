@@ -21,7 +21,9 @@ async function fetchArticle(newType) {
 
   try {
     console.log(RSSConverter);
-    const res = await axios.get(RSSConverter);
+    const res = await axios.get(RSSConverter, {
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
 
     console.log(res);
 
