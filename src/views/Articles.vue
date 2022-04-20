@@ -23,8 +23,10 @@ async function fetchArticle(newType) {
     console.log(RSSConverter);
     const res = await axios({
       method: "get",
-      url: RSSConverter,
-      headers: { "x-requested-with": "XMLHttpRequest" },
+      url: "https://corsmedium.herokuapp.com/https://medium.com/feed/@chiarapassaro",
+      headers: {
+        "x-requested-with": "XMLHttpRequest",
+      },
     });
 
     console.log(res);
