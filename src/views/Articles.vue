@@ -22,10 +22,7 @@ async function fetchArticle(newType) {
   try {
     console.log(RSSConverter);
     const res = await axios.get(RSSConverter, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "x-requested-with": "XMLHttpRequest",
-      },
+      headers: { Origin: "https://medium.com/" },
     });
 
     console.log(res);
