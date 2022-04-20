@@ -25,6 +25,7 @@ async function fetchArticle(newType) {
     headers: {
       "x-requested-with": "XMLHttpRequest",
       "Content-Type": "application/json",
+      "Sec-Fetch-Site": "cross-site",
     },
   };
 
