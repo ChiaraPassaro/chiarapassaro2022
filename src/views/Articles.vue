@@ -25,7 +25,6 @@ async function fetchArticle(newType) {
     headers: {
       "x-requested-with": "XMLHttpRequest",
       "Content-Type": "application/json",
-      Origin: "https://chiarapassaro.dev",
     },
   };
 
