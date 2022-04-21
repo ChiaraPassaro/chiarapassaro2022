@@ -24,7 +24,7 @@ async function fetchArticle(newType) {
     console.log(RSSConverter);
     const res = await axios({
       method: "get",
-      url: "https://cors-proxy.htmldriven.com/?url=https://medium.com/feed/@chiarapassaro",
+      url: "https://api.allorigins.win/get?url=https://medium.com/feed/@chiarapassaro",
     });
 
     console.log(res);
