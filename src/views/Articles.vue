@@ -21,7 +21,7 @@ async function fetchArticle(newType) {
   state.setIsLoading(true);
   const config = {
     method: "get",
-    url: "https://corsmedium.herokuapp.com/medium.com/feed/@chiarapassaro",
+    url: "https://cors-proxy.htmldriven.com/?url=https://medium.com/feed/@chiarapassaro",
     headers: {
       "x-requested-with": "XMLHttpRequest",
       "Content-Type": "application/json",
