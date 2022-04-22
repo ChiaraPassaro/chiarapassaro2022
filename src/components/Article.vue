@@ -1,17 +1,14 @@
 <script setup>
-defineProps(["title", "thumb", "link", "content"]);
+defineProps(["title", "link", "content"]);
 </script>
 
 <template>
   <article>
-    <a :href="link" target="_blank"
-      ><img class="thumb" :src="thumb" :alt="title"
-    /></a>
     <div>
       <h3>
         <a :href="link" target="_blank">{{ title }}</a>
       </h3>
-      <div>{{ content }}</div>
+      <div v-html="content"></div>
     </div>
   </article>
 </template>

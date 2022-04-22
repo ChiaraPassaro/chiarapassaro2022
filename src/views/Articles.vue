@@ -5,6 +5,7 @@ import { watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Loading from "../components/icons/Loading.vue";
 import { state } from "../store";
+import useXml2Json from "../composables/useXml2Json";
 const route = useRoute();
 const router = useRouter();
 defineProps(["color"]);
@@ -21,21 +22,22 @@ async function fetchArticle(newType) {
   state.setIsLoading(true);
 
   try {
-    console.log(RSSConverter);
     const res = await axios({
       method: "get",
       url: "https://api.allorigins.win/get?url=https://medium.com/feed/@chiarapassaro",
     });
 
-    console.log(res);
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(res.data.contents, "application/xml");
 
+    const data = useXml2Json(xml).rss.channel.item;
     if (newType == "all") {
       state.setIsLoading(false);
-      return state.setArticles(res.data.items);
+      return state.setArticles(data);
     }
 
     state.setArticles(
-      res.data.items.filter((element) => {
+      data.filter((element) => {
         return element.categories.includes(newType);
       })
     );
@@ -51,7 +53,6 @@ async function fetchArticle(newType) {
     }
     state.setIsLoading(false);
   } catch (err) {
-    console.log(err);
     router.push({
       name: "home",
     });
@@ -69,7 +70,7 @@ function filter(content) {
   const div = document.createElement("div");
   div.innerHTML = content;
   return (
-    div.textContent.substring(1, 200) || div.innerText.substring(1, 200) || ""
+    div.textContent.substring(0, 200) || div.innerText.substring(0, 200) || ""
   );
 }
 </script>
@@ -86,7 +87,6 @@ function filter(content) {
         v-for="(article, index) in state.articles"
         :title="article.title"
         :link="article.link"
-        :thumb="article.thumbnail"
         :key="index"
         :content="filter(article.content)"
       />
