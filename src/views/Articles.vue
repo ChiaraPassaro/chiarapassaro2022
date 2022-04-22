@@ -13,7 +13,6 @@ defineProps(["color"]);
 //Medium Feeds Setup
 const username = `chiarapassaro`;
 const RSSUrl = `https://medium.com/feed/@${username}`;
-const RSSConverter = `https://corsmedium.herokuapp.com/${RSSUrl}`;
 const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
@@ -23,13 +22,14 @@ async function fetchArticle(newType) {
   try {
     const res = await axios({
       method: "get",
-      url: "https://api.allorigins.win/get?url=https://medium.com/feed/@chiarapassaro",
+      url: `https://api.allorigins.win/get?url=${RSSUrl}`,
     });
 
     const parser = new DOMParser();
     const xml = parser.parseFromString(res.data.contents, "application/xml");
 
     const data = useXml2Json(xml).rss.channel.item;
+
     if (newType == "all") {
       state.setIsLoading(false);
       return state.setArticles(data);
@@ -69,7 +69,7 @@ function filter(content) {
   const div = document.createElement("div");
   div.innerHTML = content;
   return (
-    div.textContent.substring(0, 200) || div.innerText.substring(0, 200) || ""
+    div.textContent.substring(0, 100) || div.innerText.substring(0, 100) || ""
   );
 }
 </script>
