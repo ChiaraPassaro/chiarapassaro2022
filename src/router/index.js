@@ -25,7 +25,7 @@ const router = createRouter({
         aside: Articles,
       },
       meta: {
-        title: "Chiara Passar - Articles",
+        title: "Chiara Passaro - Articles",
         description: "Chiara Passaro Full Stack Web Developer and Teacher",
       },
     },
