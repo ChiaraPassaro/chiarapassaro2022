@@ -17,7 +17,6 @@ const RSSConverter = `https://corsmedium.herokuapp.com/${RSSUrl}`;
 const type = ref(route.params.type);
 
 async function fetchArticle(newType) {
-  console.log("fetch");
   type.value = newType;
   state.setIsLoading(true);
 
@@ -38,7 +37,7 @@ async function fetchArticle(newType) {
 
     state.setArticles(
       data.filter((element) => {
-        return element.categories.includes(newType);
+        return element.category.includes(newType);
       })
     );
 
