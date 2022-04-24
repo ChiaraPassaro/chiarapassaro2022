@@ -1,21 +1,19 @@
+import { isArray } from "@vue/shared";
+
 export default function useXml2Json(xml) {
   try {
     let obj = {};
-    if (xml.children.length > 0) {
-      for (let i = 0; i < xml.children.length; i++) {
-        const item = xml.children.item(i);
-        let nodeName = item.nodeName;
-
-        if (nodeName === "content:encoded") {
-          nodeName = "content";
-        }
-
-        if (typeof obj[nodeName] == "undefined") {
+    let length = xml.children.length;
+    if (length > 0) {
+      for (let index = 0; index < length; index++) {
+        const item = xml.children[index];
+        let nodeName =
+          item.nodeName === "content:encoded" ? "content" : item.nodeName;
+        if (!(nodeName in obj)) {
           obj[nodeName] = useXml2Json(item);
         } else {
-          if (typeof obj[nodeName].push == "undefined") {
+          if (!isArray(obj[nodeName])) {
             const old = obj[nodeName];
-
             obj[nodeName] = [];
             obj[nodeName].push(old);
           }
