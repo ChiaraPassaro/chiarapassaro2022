@@ -35,7 +35,7 @@ The main topics are:
 From these three nodes starts a web of connections between different subjects, clicking on these, related contents are shown.
 
 I have to show the list of articles from the Medium feed and show my project's `readme.md` also.
-To achieve this latest goal, I have decided to insert the Markdown files in a folder and open them directly with an Axios calling, and after parse the content in HTML and highlight the code, with `Marked` and `Hljs`.
+To achieve this latest goal, I have decided to insert the Markdown files in a folder and open them directly with an Axios calling, and after parsing the content in HTML and highlighting the code, with `Marked` and `Hljs`.
 
 ## Programming
 I wanted to play also with Composition API  - this is a Vue project - and Typescript.
