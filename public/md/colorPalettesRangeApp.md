@@ -7,7 +7,7 @@ You can copy a single color in HSL, RGB, HEX format, or your single palette in J
 ## This App is developed in VueJS/Electron and is based on my npm package Color Palettes Range
 
 ## Download Color Palettes Range
-[Mac](./make/zip/darwin/x64/ColorPalettesRange-darwin-x64-0.1.0.zip) - [Win](./make/zip/win32/x64/ColorPalettesRange-win32-x64-0.1.0.zip)
+[Mac](../make/zip/darwin/x64/ColorPalettesRange-darwin-x64-0.1.0.zip) - [Win](../make/zip/win32/x64/ColorPalettesRange-win32-x64-0.1.0.zip)
 *Windows: If exe not run right click and use compatibility test.*
 
 
